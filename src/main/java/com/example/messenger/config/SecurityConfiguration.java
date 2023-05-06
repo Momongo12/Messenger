@@ -25,7 +25,7 @@ public class SecurityConfiguration{
                 .csrf().disable()
                 .authorizeRequests()
                 .requestMatchers( "/registration", "/css/**", "/", "/resources/**").permitAll()
-                .requestMatchers("/chat").hasRole("USER")
+                .requestMatchers("/chats").hasRole("USER")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()

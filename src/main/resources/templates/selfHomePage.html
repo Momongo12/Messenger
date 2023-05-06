@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Страница пользователя</title>
+    <script src="https://kit.fontawesome.com/aa824e78b1.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/css/selfHomePage.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="menu">
+            <ul class="items">
+                <li class="item">
+                    <a href="/home"><i class="fa fa-home" aria-hidden="true"></i></a>
+                </li>
+                <li class="item">
+                    <i class="fa fa-user" aria-hidden="true"></i>
+                </li>
+                <li class="item item-active">
+                    <a href="/chats"><i class="fa fa-commenting" aria-hidden="true"></i></a>
+                </li>
+                <li class="item">
+                    <i class="fa fa-cog" aria-hidden="true"></i>
+                </li>
+            </ul>
+        </nav>
+        <div class="user-info-container">
+            <div class="user-block">
+                <div class="user-avatar">
+                    <img src="https://i.imgur.com/8RKXAIV.jpg" alt="image user" class="user-img">
+                    <div class="image-options" style="display: none">
+                        <button class="upload-image-btn"><i class="fa-solid fa-image"></i>Upload image</button>
+                        <button class="delete-image-btn"><i class="fas fa-trash"></i> Delete image</button>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <div class="header-user-block">
+                        <div class="edit-details-buttons">
+                            <button class="edit-button">Edit</button>
+                            <button class="save-button" style="display: none">Save</button>
+                            <button class="cancel-button" style="display: none">Close</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="user-details-info">
+                    <div class="user-details-text">
+                        <h3 class="user-name">Denis Moskvin</h3>
+                        <p class="user-description">Middle backend developer</p>
+                        <button class="copy-link-button">Copy Link</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input id="image-input" type="file" style="display: none;">
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/js/homePage.js"></script>
+</body>
+</html>

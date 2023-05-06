@@ -94,6 +94,7 @@ sendMessageButton.addEventListener('click', event => {
     };
     xhr.send(JSON.stringify(data));
 });
+
 searchInput.addEventListener('input', (event) => {
     const inputValue = event.target.value.trim();
     if (inputValue.startsWith('@')) {

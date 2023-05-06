@@ -1,0 +1,363 @@
+* {
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: auto;
+    margin-bottom: 0.5rem;
+    color: #455a64;
+}
+
+p {
+    margin-top: 0;
+    margin-bottom: 1rem
+}
+
+a {
+    text-decoration: none;
+}
+
+/*body {*/
+/*    !*display: flex;*!*/
+/*    !*justify-content: center;*!*/
+/*    !*align-items: center;*!*/
+/*    height: 100vh;*/
+/*    background-color: black;*/
+/*    box-sizing: border-box;*/
+/*}*/
+body {
+    background-color: black;
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    padding:0;
+    margin: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: #FFF;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+/* ===== MENU ===== */
+.menu {
+    height: 100%;
+    float: left;
+    width: 5%;
+    background: #4768b5;
+    background: -webkit-linear-gradient(#4768b5, #35488e);
+    background: -o-linear-gradient(#4768b5, #35488e);
+    background: -moz-linear-gradient(#4768b5, #35488e);
+    background: linear-gradient(#4768b5, #35488e);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19);
+}
+
+.menu .items {
+    list-style:none;
+    margin: auto;
+    padding: 0;
+}
+
+.menu .items .item {
+    height: 70px;
+    border-bottom: 1px solid #6780cc;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    color: #9fb5ef;
+    font-size: 17pt;
+}
+
+.menu .items .item-active {
+    background-color:#5172c3;
+    color: #FFF;
+}
+
+.menu .items .item:hover {
+    cursor: pointer;
+    background-color: #4f6ebd;
+    color: #cfe5ff;
+}
+
+.user-info-container {
+    width: 95%;
+    background-color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-block {
+    width: 40%;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid white;
+    border-radius: 3px;
+}
+
+.header-user-block {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.edit-details-buttons{
+    width: 150px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+/* Стили для кнопок edit, save и cancel */
+.edit-details-buttons .edit-button,
+.edit-details-buttons .save-button,
+.edit-details-buttons .cancel-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.edit-details-buttons .save-button,
+.edit-details-buttons .cancel-button {
+    /*display: none;*/
+    margin-left: 5px    ;
+}
+
+
+.user-info {
+    height: 48%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: url("https://i.imgur.com/K7A78We.jpg");
+    background-size: cover;
+    background-position: center;
+    padding: 5px 5px 10px 5px;
+}
+
+.user-details-info {
+    display: flex;
+    align-items: start;
+    justify-content: center;
+    background-color: white;
+    height: 52%;
+}
+
+.user-avatar {
+    position: absolute;
+    align-self: center;
+    top: 50%;
+    transform: translate(0, -50%)
+}
+
+.user-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    background-size: cover;
+    background-position: center;
+}
+
+.image-options {
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    padding: 10px;
+    z-index: 10;
+    animation-name: fadeIn;
+    animation-duration: 0.5s;
+}
+
+@keyframes fadeIn {
+    0% {opacity: 0;}
+    100% {opacity: 1;}
+}
+
+.image-options button {
+    width: auto;
+    white-space: nowrap;
+    font-size: 13px;
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    color: #fff;
+    background-color: transparent;
+    border: none;
+    margin-right: 10px;
+}
+
+.image-options button i {
+    text-decoration: none;
+    margin-right: 5px;
+    font-size: 1em;
+}
+
+.image-options button:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+
+.user-details {
+    display: flex;
+
+}
+
+.user-details-text {
+    color: gray;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 0 10px 0;
+    margin-top: 60px;
+    text-align: center;
+}
+
+.copy-link-button {
+    align-self: center;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.user-details-text-input{
+    border: none;
+    border-bottom: 1px solid #ccc;
+    font-size: 0.8rem;
+    margin-bottom: 6px;
+}
+
+.user-details-text-input:focus {
+    outline: none;
+    border-bottom-color: #0077ff;
+}
+
+/*!* Стили для верхнего блока *!*/
+/*.user-info {*/
+/*    width: 100%;*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    align-items: center;*/
+/*}*/
+
+/*.user-avatar {*/
+/*    width: 100px;*/
+/*    height: 100px;*/
+/*    border-radius: 50%;*/
+/*    margin-bottom: 10px;*/
+/*    background-image: url("https://via.placeholder.com/150");*/
+/*    background-size: cover;*/
+/*    background-position: center;*/
+/*    position: relative;*/
+/*}*/
+
+/*.user-avatar::after {*/
+/*    content: "";*/
+/*    display: block;*/
+/*    position: absolute;*/
+/*    top: -5px;*/
+/*    right: -5px;*/
+/*    width: 25px;*/
+/*    height: 25px;*/
+/*    border-radius: 50%;*/
+/*    background-color: #007bff;*/
+/*    background-image: url("https://via.placeholder.com/25");*/
+/*    background-size: cover;*/
+/*    background-position: center;*/
+/*    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);*/
+/*}*/
+
+/*.user-info h2 {*/
+/*    margin: 0;*/
+/*    font-size: 24px;*/
+/*    font-weight: bold;*/
+/*    text-align: center;*/
+/*}*/
+
+/*.user-info p {*/
+/*    margin: 0;*/
+/*    font-size: 16px;*/
+/*    text-align: center;*/
+/*    color: #6c757d;*/
+/*}*/
+
+/*!* Стили для нижнего блока *!*/
+/*.user-contact {*/
+/*    width: 100%;*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    align-items: center;*/
+/*}*/
+
+/*.user-contact h3 {*/
+/*    margin: 0;*/
+/*    font-size: 18px;*/
+/*    font-weight: bold;*/
+/*    text-align: center;*/
+/*    margin-bottom: 10px;*/
+/*}*/
+
+/*.user-contact ul {*/
+/*    list-style: none;*/
+/*    padding: 0;*/
+/*    margin: 0;*/
+/*    text-align: center;*/
+/*}*/
+
+/*.user-contact ul li {*/
+/*    margin-bottom: 5px;*/
+/*}*/
+
+/*.user-contact ul li a {*/
+/*    text-decoration: none;*/
+/*    color: #6c757d;*/
+/*}*/
+
+/*!* Стили для кнопок edit, save и cancel *!*/
+/*.user-info .edit-button,*/
+/*.user-info .save-button,*/
+/*.user-info .cancel-button {*/
+/*    display: none;*/
+/*    margin-top: 10px;*/
+/*    background-color: #007bff;*/
+/*    color: #fff;*/
+/*    border: none;*/
+/*    padding: 5px 10px;*/
+/*    border-radius: 5px;*/
+/*    font-size: 16px;*/
+/*    cursor: pointer;*/
+/*}*/
+
+/*.user-info .edit-button {*/
+/*    display: block;*/
+/*}*/
+
+/*.user-info .save-button,*/
+/*.user-info .cancel-button {*/
+/*    margin-left: 10px;*/
+/*}*/
+
+/*.user-info.active .user-info-content {*/
+/*    display: none;*/
+/*}*/
