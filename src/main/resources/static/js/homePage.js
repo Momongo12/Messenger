@@ -11,6 +11,7 @@ const userImg = document.querySelector(".user-img");
 const imageInput = document.getElementById('image-input');
 const uploadImageButton = document.querySelector(".upload-image-btn")
 const deleteImageButton = document.querySelector(".delete-image-btn");
+let typeOfUploadedOrDeletedImage = null;
 
 const userNameInput = document.createElement('input');
 userNameInput.className = "user-details-text-input";
@@ -30,27 +31,38 @@ uploadImageButton.addEventListener('click', () => {
    imageInput.click();
 });
 
+deleteImageButton.addEventListener('click', async () => {
+    try {
+        const response = await axios.delete('/image?typeImage=' + typeOfUploadedOrDeletedImage);
+        const src = response.data;
+        userImg.setAttribute('src', src);
+    }catch (error) {
+        console.log(error);
+    }
+})
+
 imageInput.addEventListener('change', async (event) => {
     const file = event.target.files[0];
     const formData = new FormData();
     formData.append('file', file);
 
     try {
-        const response = await axios.post('/image/upload', formData);
+        const response = await axios.post('/image/upload?typeImage=' + typeOfUploadedOrDeletedImage, formData);
         const src = response.data;
-        console.log(src);
         userImg.setAttribute('src', src);
     } catch (error) {
         console.error(error);
     }
 });
 
-// отображение/скрытие кнопок "Загрузить фотографию" и "Удалить фотографию"
 userAvatar.addEventListener('mouseover', () => {
+    typeOfUploadedOrDeletedImage = "avatar"
     const uploadMenu = document.querySelector('.image-options');
-    if (uploadMenu) uploadMenu.style.display = 'block';
+    if (uploadMenu && editButton.style.display === "none") uploadMenu.style.display = 'block';
 });
+
 userAvatar.addEventListener('mouseout', () => {
+    typeOfUploadedOrDeletedImage = null;
     const uploadMenu = document.querySelector('.image-options');
     if (uploadMenu) uploadMenu.style.display = 'none';
 });

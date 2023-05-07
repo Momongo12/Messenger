@@ -3,7 +3,9 @@ package com.example.messenger.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @Entity
@@ -17,17 +19,29 @@ public class Message {
     @Column(name = "chat_id")
     private Long chatId;
 
-    @Column(name = "sender_id")
-    private Long senderId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "sender_id")
+    private User sender;
 
     @Column(name = "text")
     private String text;
 
     @Column(name = "sent_at")
-    private Date date;
+    private Timestamp date;
 
     public Message(){
 
     }
+    public String getTimeByFormat(String format){
+        LocalDateTime localDateTime = date.toLocalDateTime();
+        DateTimeFormatter formatter;
+        try {
+            formatter = DateTimeFormatter.ofPattern(format);
+        }catch (IllegalArgumentException e){
+            System.err.println("Error format of dateTime" + e.getMessage());
+            formatter = DateTimeFormatter.ofPattern("HH:mm");
+        }
 
+        return localDateTime.format(formatter);
+    }
 }

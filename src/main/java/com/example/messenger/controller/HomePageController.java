@@ -1,33 +1,37 @@
 package com.example.messenger.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
+import com.example.messenger.model.User;
+import com.example.messenger.service.ImageService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 
 
 @Controller
 public class HomePageController {
 
+    @Autowired
+    private ImageService imageService;
+
     @GetMapping("/home")
-    public String getHomePage(){
+    public String getHomePage(Authentication authentication, Model model){
+        User currentUser = (User) authentication.getPrincipal();
+        model.addAttribute("avatarImageUrl", currentUser.getAvatarImageUrl());
+        model.addAttribute("user", currentUser);
+
         return "selfHomePage";
     }
 
@@ -46,18 +50,33 @@ public class HomePageController {
     }
 
     @PostMapping("/image/upload")
-    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile image, @RequestParam("typeImage") String typeImage,
+                                              Authentication authentication) {
         try {
-            String imageName = StringUtils.cleanPath(file.getOriginalFilename());
-            Path imagePath = Paths.get("src/main/resources/static/images/" + imageName);
-            Files.copy(file.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-            String baseUrl = request.getServletContext().getContextPath();
-            String imageUrl = baseUrl + "/images/" + imageName;
-            System.out.println(baseUrl + "/images/" + imageName);
-            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(imageUrl);
+            User currentUser = (User) authentication.getPrincipal();
+            if (typeImage.equals("avatar")) {
+                String imageUrl = imageService.updateUserAvatarImageUrlByUserId(currentUser, image);
+                return ResponseEntity.ok().body(imageUrl);
+            } else {
+                imageService.updateUserAvatarImageUrlByUserId(currentUser, image);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // доделать
+            }
         } catch (IOException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @DeleteMapping("/image")
+    public ResponseEntity<String> deleteUserImage(@RequestParam("typeImage") String typeImage, Authentication authentication){
+        User currentUser = (User) authentication.getPrincipal();
+        if (typeImage.equals("avatar")){
+            imageService.deleteAvatarImageByUser(currentUser);
+        }else if (typeImage.equals("bgImage")){
+            imageService.deleteBgImageByUserId(currentUser);
+        }else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(currentUser.getAvatarImageUrl());
     }
 }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <title>Страница пользователя</title>
     <script src="https://kit.fontawesome.com/aa824e78b1.js" crossorigin="anonymous"></script>
@@ -26,7 +27,7 @@
         <div class="user-info-container">
             <div class="user-block">
                 <div class="user-avatar">
-                    <img src="https://i.imgur.com/8RKXAIV.jpg" alt="image user" class="user-img">
+                    <img th:src="${avatarImageUrl}" alt="image user" class="user-img">
                     <div class="image-options" style="display: none">
                         <button class="upload-image-btn"><i class="fa-solid fa-image"></i>Upload image</button>
                         <button class="delete-image-btn"><i class="fas fa-trash"></i> Delete image</button>
@@ -43,8 +44,8 @@
                 </div>
                 <div class="user-details-info">
                     <div class="user-details-text">
-                        <h3 class="user-name">Denis Moskvin</h3>
-                        <p class="user-description">Middle backend developer</p>
+                        <h3 class="user-name" th:text="${user.getUsername()}"></h3>
+                        <p class="user-description" th:text="${user.getShortInfo()}"></p>
                         <button class="copy-link-button">Copy Link</button>
                     </div>
                 </div>

@@ -10,13 +10,45 @@ let chatId;
 
 function displayChatMessages(messages) {
     const chatMessages = document.getElementById('messages-chat');
+    let lastSenderId = -1;
     chatMessages.innerHTML = '';
-    messages.forEach(message => {
+
+    for (let messageNumber = 0; messageNumber < messages.length; messageNumber++){
+        let message = messages[messageNumber];
         const messageElement = document.createElement('div');
-        messageElement.className = "message text-only";
-        messageElement.textContent = message.text;
+
+        if (lastSenderId !== message.senderId){
+            messageElement.classList.add('message');
+            messageElement.innerHTML = `
+                        <div class="message">
+                            <div class="photo" style="background-image: url('${message.userAvatarUrl}')"></div>
+                            <div class="text-block">
+                                <div class="info-message">
+                                    <a href="/home/${message.senderId}" class="message-details username">${message.senderName}</a>
+                                    <p class="message-details">${message.departureTime}</p>
+                                </div>
+                                <div class="message-text">
+                                    <p>${message.text}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+            lastSenderId = message.senderId;
+            const messageTextBlock = messageElement.querySelector(".message-text");
+
+            for (let j = messageNumber + 1; j < messages.length; j++, messageNumber++){
+                if (lastSenderId === messages[j].senderId){
+                    const messageTextParagraph = document.createElement('p');
+                    messageTextParagraph.textContent =  messages[j].text;
+                    messageTextBlock.appendChild(messageTextParagraph);
+                }else {
+                    break;
+                }
+            }
+        }
         chatMessages.appendChild(messageElement);
-    });
+    }
 }
 
 function displayChatsAndUsersList(chatsData) {
@@ -32,7 +64,6 @@ function displayChatsAndUsersList(chatsData) {
                             <p class="name">${(chat.chatId === 0) ? chat.username: chat.chatName}</p>
                             <p class="message unique-username">${(chat.chatId === 0) ? '@' + chat.uniqueUsername: chat.lastMessage}</p>
                         </div>
-                        <div class="timer">12 sec</div>
                     `;
         chatList.appendChild(chatDiv);
     });

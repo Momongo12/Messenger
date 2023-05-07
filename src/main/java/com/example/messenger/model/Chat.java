@@ -49,4 +49,12 @@ public class Chat {
         return chatName;
     }
 
+    public String getChatAvatarImageUrlForUser(User currentUser){
+        for (User member: members){
+            if (!member.equals(currentUser)){
+                return member.getAvatarImageUrl();
+            }
+        }
+        return null;
+    }
 }

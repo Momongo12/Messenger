@@ -2,22 +2,22 @@ package com.example.messenger.model;
 
 
 import jakarta.persistence.*;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.io.File;
+import java.util.*;
 
 
 @Entity
 @Table(name = "users")
+@Data
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long user_id;
+    private Long userId;
 
     @Column(name = "username")
     private String username;
@@ -31,6 +31,9 @@ public class User implements UserDetails {
     @Column(name = "unique_username")
     private String uniqueUsername;
 
+    @Column(name = "short_info")
+    private String shortInfo;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -42,15 +45,12 @@ public class User implements UserDetails {
 
     private List<Chat> chats;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private UserImages userImages;
+
+    private String defaultAvatarImageUrl;
+
     public User(){
-    }
-
-    public Long getId() {
-        return user_id;
-    }
-
-    public void setId(Long user_id) {
-        this.user_id = user_id;
     }
 
     public String getUsername() {
@@ -127,6 +127,14 @@ public class User implements UserDetails {
         this.uniqueUsername = uniqueUsername;
     }
 
+    public UserImages getUserImages() {
+        return userImages;
+    }
+
+    public void setUserImages(UserImages userImages) {
+        this.userImages = userImages;
+    }
+
     public List<Chat> getChatsForUsernamePrefix(String usernamePrefix){
         List<Chat> chatsForUsernamePrefix = new LinkedList<>();
         for (Chat chat: chats){
@@ -135,5 +143,19 @@ public class User implements UserDetails {
             }
         }
         return chatsForUsernamePrefix;
+    }
+
+    public String getAvatarImageUrl(){
+        if (userImages != null && userImages.getAvatarImageUrl() != null){
+            return userImages.getAvatarImageUrl();
+        }
+        if (defaultAvatarImageUrl == null) {
+            File directory = new File("src/main/resources/static/images/defaultImages");
+            int filesNumber = directory.listFiles((dir, name) -> name.startsWith("defaultAvatar") && name.endsWith(".jpg")).length;
+            int randomFileNumber = new Random().nextInt(filesNumber) + 1;
+            defaultAvatarImageUrl = "/images/defaultImages/" + "defaultAvatar" + randomFileNumber + ".jpg";
+        }
+
+        return defaultAvatarImageUrl;
     }
 }

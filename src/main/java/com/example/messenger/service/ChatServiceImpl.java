@@ -42,9 +42,6 @@ public class ChatServiceImpl implements ChatService{
         return messageRepository.findMessagesByChatIdOrderByDateAsc(chatId);
     }
 
-//    public void updateLastMessageByChatId(Long chatId, String lastMessage){
-//        chatRepository.updateLastMessage(chatId, lastMessage);
-//    }
     public void updateLastMessageByChatId(Long chatId, String lastMessage) {
         Optional<Chat> optionalChat = chatRepository.findById(chatId);
         if (optionalChat.isPresent()) {

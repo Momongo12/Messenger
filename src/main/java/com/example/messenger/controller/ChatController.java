@@ -42,9 +42,13 @@ public class ChatController {
 
         List<Message> messages = chat.getMessages();
         List<Map<String, Object>> messageList = new ArrayList<>();
-        for (Message message : messages) {
+        for (Message msg : messages) {
             Map<String, Object> messageMap = new HashMap<>();
-            messageMap.put("text", message.getText());
+            messageMap.put("text", msg.getText());
+            messageMap.put("senderId", msg.getSender().getUserId());
+            messageMap.put("senderName", msg.getSender().getUsername());
+            messageMap.put("departureTime", msg.getTimeByFormat("HH:mm"));
+            messageMap.put("userAvatarUrl", msg.getSender().getAvatarImageUrl());
             messageList.add(messageMap);
         }
         response.put("messages", messageList);
@@ -55,11 +59,10 @@ public class ChatController {
     @PostMapping("/chats/messages")
     @ResponseBody
     public Map<String, Object> createMessage(@RequestBody Message message, Authentication authentication){
-
         chatService.updateLastMessageByChatId(message.getChatId(), message.getText());
 
         Map<String, Object> response = new HashMap<>();
-        message.setSenderId(((User) authentication.getPrincipal()).getId());
+        message.setSender((User) authentication.getPrincipal());
         message.setMessageId(null);
         boolean statusSaveMessage = chatService.saveMessage(message);
 
@@ -71,6 +74,10 @@ public class ChatController {
         for (Message msg : messages) {
             Map<String, Object> messageMap = new HashMap<>();
             messageMap.put("text", msg.getText());
+            messageMap.put("senderId", msg.getSender().getUserId());
+            messageMap.put("senderName", msg.getSender().getUsername());
+            messageMap.put("departureTime", msg.getTimeByFormat("HH:mm"));
+            messageMap.put("userAvatarUrl", msg.getSender().getAvatarImageUrl());
             messageList.add(messageMap);
         }
         response.put("messages", messageList);
