@@ -1,20 +1,20 @@
 package com.example.messenger.controller;
 
+import com.example.messenger.dto.UserInfoDto;
 import com.example.messenger.model.Chat;
 import com.example.messenger.model.User;
 import com.example.messenger.service.ChatService;
 import com.example.messenger.service.UserService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
-@Controller
+@RestController
 public class UserController {
 
     @Autowired
@@ -23,33 +23,25 @@ public class UserController {
     @Autowired
     private ChatService chatService;
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    @Transactional
     @GetMapping("/api/chats")
-    @ResponseBody
     public Map<String, Object> getChatsUser(Authentication authentication){
         Map<String, Object> response = new HashMap<>();
-        User user = (User) authentication.getPrincipal();
-        List<Chat> chats = user.getChats();
-        List<Map<String, Object>> chatsList = new ArrayList<>();
+        User currentUser = (User) authentication.getPrincipal();
 
-        for (Chat chat: chats){
-            Map<String, Object> chatsMap = new HashMap<>();
-            chatsMap.put("chatName", chat.getChatName(user));
-            chatsMap.put("lastMessage", chat.getLastMessage());
-            chatsMap.put("chatId", chat.getChatId());
-
-            chatsList.add(chatsMap);
-        }
+        List<Chat> chats = currentUser.getChats();
+        List<Map<String, Object>> chatsList = getChatsList(chats, currentUser);
         response.put("chatsList", chatsList);
 
         return response;
     }
 
+    @PostMapping("/user/info")
+    public void updateUserInfo(@RequestBody UserInfoDto userInfoDto, Authentication authentication) {
+        User currentUser = (User) authentication.getPrincipal();
+        userService.updateUserInfo(userInfoDto, currentUser);
+    }
+
     @PostMapping("api/chats/{secondInterlocutorUniqueUsername}")
-    @ResponseBody
     public Map<String, Object> createChat(@RequestBody Chat chat, @PathVariable String secondInterlocutorUniqueUsername,
                                           Authentication authentication){
         Map<String, Object> response = new HashMap<>();
@@ -66,16 +58,7 @@ public class UserController {
         List<Chat> chats = currentUser.getChats();
         chats.add(chat);
         userService.saveUser(currentUser);
-        List<Map<String, Object>> chatsList = new ArrayList<>();
-
-        for (Chat cht: chats){
-            Map<String, Object> chatMap = new HashMap<>();
-            chatMap.put("chatId", cht.getChatId());
-            chatMap.put("chatName", cht.getChatName(currentUser));
-            chatMap.put("lastMessage", cht.getLastMessage());
-
-            chatsList.add(chatMap);
-        }
+        List<Map<String, Object>> chatsList = getChatsList(chats, currentUser);
 
         response.put("currentChatId", chat.getChatId());
         response.put("chatsList", chatsList);
@@ -83,46 +66,14 @@ public class UserController {
         return response;
     }
 
-//    @PostMapping("api/chats/{secondInterlocutorUniqueUsername}")
-//    @ResponseBody
-//    public Map<String, Object> createChat(@RequestBody Chat chat, @PathVariable String secondInterlocutorUniqueUsername,
-//                                          Authentication authentication) {
-//        Map<String, Object> response = new HashMap<>();
-//
-//        User currentUser = (User) authentication.getPrincipal();
-//        User secondUser = userService.getUserByUniqueUsername(secondInterlocutorUniqueUsername);
-//        List<User> usersList = new ArrayList<>();
-//        usersList.add(currentUser);
-//        usersList.add(entityManager.getReference(User.class, secondUser.getId()));
-//
-//        chat.setMembers(usersList);
-//        chatService.saveChat(chat);
-//
-//        response.put("chatId", chat.getChatId());
-////        response.put("chatsList", chatService.getChatsList(currentUser));
-//
-//        return response;
-//    }
-
 
     @GetMapping("/search/users")
-    @ResponseBody
     public Map<String, Object> getChatsUserAndAnotherFoundUsers(@RequestParam String username, Authentication authentication){
         Map<String, Object> response = new HashMap<>();
         User currentUser = (User) authentication.getPrincipal();
 
         List<Chat> chats = currentUser.getChatsForUsernamePrefix(username);
-        List<Map<String, Object>> chatsList = new ArrayList<>();
-
-        for (Chat chat: chats){
-            Map<String, Object> chatMap = new HashMap<>();
-            chatMap.put("chatId", chat.getChatId());
-            chatMap.put("chatName", chat.getChatName(currentUser));
-            chatMap.put("lastMessage", chat.getLastMessage());
-
-            chatsList.add(chatMap);
-        }
-
+        List<Map<String, Object>> chatsList = getChatsList(chats, currentUser);
         response.put("chatsList", chatsList);
 
         List<User> users = userService.getUsersByUnigueUsernamePrefix(username);
@@ -140,5 +91,21 @@ public class UserController {
         response.put("usersList", usersList);
 
         return response;
+    }
+
+    private List<Map<String, Object>> getChatsList(List<Chat> chats, User currentUser){
+        List<Map<String, Object>> chatsList = new ArrayList<>();
+
+        for (Chat chat: chats){
+            Map<String, Object> chatMap = new HashMap<>();
+            chatMap.put("chatId", chat.getChatId());
+            chatMap.put("chatAvatarImageUrl", chat.getChatAvatarImageUrlForUser(currentUser));
+            chatMap.put("chatName", chat.getChatName(currentUser));
+            chatMap.put("lastMessage", chat.getLastMessage());
+            chatMap.put("interlocutorStatus", userService.isUserOnline(chat.getChatName(currentUser)) ? "online": "offline");
+
+            chatsList.add(chatMap);
+        }
+        return chatsList;
     }
 }

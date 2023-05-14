@@ -1,10 +1,13 @@
 package com.example.messenger.service;
 
 
+import com.example.messenger.dto.UserInfoDto;
 import com.example.messenger.model.Role;
 import com.example.messenger.model.User;
 import com.example.messenger.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,6 +26,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Autowired
+    private SessionRegistry sessionRegistry;
 
     public boolean saveUser(User user) {
         User userFromDb = userRepository.findByEmail(user.getEmail());
@@ -42,24 +47,47 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByEmail(email);
     }
 
-    @Override
     public User findUserByUserId(Long userId) {
         return userRepository.findById(userId).orElse(null);
     }
 
-    @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email);
     }
 
-    @Override
     public List<User> getUsersByUnigueUsernamePrefix(String usernamePrefix) {
         return userRepository.findByUniqueUsernameStartingWith(usernamePrefix);
     }
 
-    @Override
+    public void updateUserInfo(UserInfoDto userInfoDto, User user){
+        if (userInfoDto.getUserName() != null) {
+            user.setUsername(userInfoDto.getUserName());
+        }
+        if (userInfoDto.getUserDescription() !=null) {
+            user.setShortInfo(userInfoDto.getUserDescription());
+        }
+        userRepository.save(user);
+    }
+
     public User getUserByUniqueUsername(String uniqueUsername) {
         return userRepository.findByUniqueUsername(uniqueUsername);
+    }
+
+    public boolean isUserOnline(String username) {
+        List<Object> principals = sessionRegistry.getAllPrincipals();
+        for (Object principal : principals) {
+            if (principal instanceof User) {
+                User user = (User) principal;
+                if (user.getUsername().equals(username)) {
+                    List<SessionInformation> sessions = sessionRegistry.getAllSessions(principal, false);
+                    System.out.println(sessions);
+                    if (!sessions.isEmpty()) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

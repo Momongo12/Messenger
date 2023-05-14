@@ -3,52 +3,58 @@ const chatList = document.getElementById('chat-list');
 const sendMessageButton = document.getElementById("send-message-button");
 const messageInput = document.getElementById('message-input')
 const searchInput = document.getElementById("chats-search-input");
-const currentDate = new Date();
+const emojiItems = document.querySelectorAll('.emoji-item');
+const footerChat = document.querySelector(".footer-chat");
+let emojiContainer = document.querySelector('.smiley-icon-container');
+let emojiMenu = document.querySelector('.smiley-menu');
 let secondInterlocutorUniqueUsername;
-let chatId;
+let chatId = null;
 
+
+setInterval(() => {
+    if (chatId != null) {
+        xhr.open("GET", `/chats/${chatId}/messages`, true)
+        xhr.onload = function () {
+            const response = JSON.parse(xhr.responseText);
+            displayChatMessages(response.messages);
+        }
+        xhr.send();
+    }
+}, 3000)
 
 function displayChatMessages(messages) {
     const chatMessages = document.getElementById('messages-chat');
-    let lastSenderId = -1;
     chatMessages.innerHTML = '';
 
-    for (let messageNumber = 0; messageNumber < messages.length; messageNumber++){
-        let message = messages[messageNumber];
+    for (const message of messages) {
         const messageElement = document.createElement('div');
-
-        if (lastSenderId !== message.senderId){
-            messageElement.classList.add('message');
-            messageElement.innerHTML = `
-                        <div class="message">
-                            <div class="photo" style="background-image: url('${message.userAvatarUrl}')"></div>
-                            <div class="text-block">
-                                <div class="info-message">
-                                    <a href="/home/${message.senderId}" class="message-details username">${message.senderName}</a>
-                                    <p class="message-details">${message.departureTime}</p>
-                                </div>
-                                <div class="message-text">
-                                    <p>${message.text}</p>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-
-            lastSenderId = message.senderId;
+        messageElement.classList.add('message');
+        messageElement.innerHTML = `
+            <div class="message">
+              <div class="photo" style="background-image: url('${message.userAvatarUrl}')"></div>
+              <div class="text-block">
+                <div class="info-message">
+                  <a href="/home/${message.senderId}" class="message-details username">${message.senderName}</a>
+                  <p class="message-details">${message.departureTime}</p>
+                </div>
+                <div class="message-text">
+                  <p>${message.text}</p>
+                </div>
+              </div>
+            </div>
+            `;
+        if (message.subMessages != null) {
             const messageTextBlock = messageElement.querySelector(".message-text");
-
-            for (let j = messageNumber + 1; j < messages.length; j++, messageNumber++){
-                if (lastSenderId === messages[j].senderId){
-                    const messageTextParagraph = document.createElement('p');
-                    messageTextParagraph.textContent =  messages[j].text;
-                    messageTextBlock.appendChild(messageTextParagraph);
-                }else {
-                    break;
-                }
+            for (const subMessage of message.subMessages) {
+                const messageTextParagraph = document.createElement('p');
+                messageTextParagraph.textContent = subMessage;
+                messageTextBlock.appendChild(messageTextParagraph);
             }
         }
         chatMessages.appendChild(messageElement);
     }
+
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 function displayChatsAndUsersList(chatsData) {
@@ -57,8 +63,8 @@ function displayChatsAndUsersList(chatsData) {
         chatDiv.classList.add('chat-list', 'discussion', 'message-active');
         chatDiv.setAttribute('data-chat-id', chat.chatId);
         chatDiv.innerHTML = `
-                        <div class="photo" style="background-image: url(https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80);">
-                            <div class="online"></div>
+                        <div class="photo" style="background-image: url('${chat.chatAvatarImageUrl}')">
+                            <div class="${chat.interlocutorStatus}"></div>
                         </div>
                         <div class="desc-contact">
                             <p class="name">${(chat.chatId === 0) ? chat.username: chat.chatName}</p>
@@ -70,9 +76,11 @@ function displayChatsAndUsersList(chatsData) {
 }
 
 chatList.addEventListener('click', event => {
-
+    footerChat.style.display = 'flex';
     chatId = event.target.closest('[data-chat-id]').dataset.chatId;
+
     secondInterlocutorUniqueUsername = event.target.closest('[data-chat-id]').querySelector(".unique-username").innerText.trim();
+
     // Отправка AJAX-запроса на сервер для получения истории сообщений
     xhr.open('GET', `/chats/${chatId}/messages`);
     xhr.onload = () => {
@@ -82,15 +90,12 @@ chatList.addEventListener('click', event => {
         chatTitle.textContent = event.target.closest('[data-chat-id]').querySelector(".name").innerText;
 
         displayChatMessages(response.messages)
-
-        // const chatDisplay = document.getElementById('chat-display');
-        // chatDisplay.style.display = 'block';
-        // chatList.style.display = 'none';
     };
     xhr.send();
 });
 
 sendMessageButton.addEventListener('click', event => {
+    const currentDate = new Date();
     if (chatId === '0'){
         const data = {
             lastMessage: messageInput.value,
@@ -107,6 +112,8 @@ sendMessageButton.addEventListener('click', event => {
         };
         xhr.send(JSON.stringify(data));
     }
+
+    console.log(currentDate.toISOString());
 
     const data = {
         chatId: chatId,
@@ -140,7 +147,6 @@ searchInput.addEventListener('input', (event) => {
             .catch(error => console.error(error));
     }else if (inputValue === ''){
         chatList.innerHTML = '';
-        const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (this.readyState === 4 && this.status === 200) {
                 const response = JSON.parse(this.responseText);
@@ -150,4 +156,21 @@ searchInput.addEventListener('input', (event) => {
         xhr.open('GET', '/api/chats', true);
         xhr.send();
     }
+});
+
+emojiContainer.addEventListener('mouseover', function() {
+    if (chatId != null) {
+        emojiMenu.style.display = 'block';
+    }
+});
+
+emojiMenu.addEventListener('mouseleave', function() {
+    emojiMenu.style.display = 'none';
+});
+
+emojiItems.forEach(item => {
+    item.addEventListener('click', () => {
+        const emoji = item.getAttribute('data-emoji');
+        messageInput.value += emoji;
+    });
 });

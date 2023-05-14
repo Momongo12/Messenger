@@ -2,38 +2,23 @@
 <html lang="ru" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
-    <title>Страница пользователя</title>
+    <title>Home</title>
     <script src="https://kit.fontawesome.com/aa824e78b1.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="/css/selfHomePage.css">
 </head>
 <body>
     <div class="container">
-        <nav class="menu">
-            <ul class="items">
-                <li class="item">
-                    <a href="/home"><i class="fa fa-home" aria-hidden="true"></i></a>
-                </li>
-                <li class="item">
-                    <i class="fa fa-user" aria-hidden="true"></i>
-                </li>
-                <li class="item item-active">
-                    <a href="/chats"><i class="fa fa-commenting" aria-hidden="true"></i></a>
-                </li>
-                <li class="item">
-                    <i class="fa fa-cog" aria-hidden="true"></i>
-                </li>
-            </ul>
-        </nav>
+        <header th:replace="~{chat :: navigation}"></header>
         <div class="user-info-container">
             <div class="user-block">
-                <div class="user-avatar">
+                <div class="user-avatar" th:fragment="user-avatar-block">
                     <img th:src="${avatarImageUrl}" alt="image user" class="user-img">
-                    <div class="image-options" style="display: none">
-                        <button class="upload-image-btn"><i class="fa-solid fa-image"></i>Upload image</button>
-                        <button class="delete-image-btn"><i class="fas fa-trash"></i> Delete image</button>
+                    <div id="avatar-image-options" class="image-options" style="display: none">
+                        <button id="upload-avatar-image-btn" class="upload-image-btn"><i class="fa-solid fa-image"></i>Upload image</button>
+                        <button id="delete-avatar-image-btn" class="delete-image-btn"><i class="fas fa-trash"></i> Delete image</button>
                     </div>
                 </div>
-                <div class="user-info">
+                <div class="user-info" th:style="'background-image: url(' + ${profileBgImageUrl} + ');'">
                     <div class="header-user-block">
                         <div class="edit-details-buttons">
                             <button class="edit-button">Edit</button>
@@ -41,12 +26,16 @@
                             <button class="cancel-button" style="display: none">Close</button>
                         </div>
                     </div>
+                    <div id="bg-image-options" class="image-options" style="display: none">
+                        <button id="upload-bg-image-btn" class="upload-image-btn"><i class="fa-solid fa-image"></i>Upload image</button>
+                        <button id="delete-bg-image-btn" class="delete-image-btn"><i class="fas fa-trash"></i> Delete image</button>
+                    </div>
                 </div>
                 <div class="user-details-info">
                     <div class="user-details-text">
                         <h3 class="user-name" th:text="${user.getUsername()}"></h3>
                         <p class="user-description" th:text="${user.getShortInfo()}"></p>
-                        <button class="copy-link-button">Copy Link</button>
+                        <button class="copy-link-button" th:data-user-id="${user.getUserId()}">Copy Link</button>
                     </div>
                 </div>
             </div>
@@ -54,6 +43,11 @@
         <input id="image-input" type="file" style="display: none;">
     </div>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="/js/homePage.js"></script>
+    <script src="/js/selfHomePage.js"></script>
+    <script>
+        const currentUrl = window.location.pathname;
+        const activeItem = document.querySelector('.item a[href="' + currentUrl + '"]').parentElement;
+        activeItem.classList.add('item-active');
+    </script>
 </body>
 </html>

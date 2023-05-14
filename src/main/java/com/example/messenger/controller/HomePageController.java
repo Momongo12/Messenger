@@ -2,6 +2,7 @@ package com.example.messenger.controller;
 
 import com.example.messenger.model.User;
 import com.example.messenger.service.ImageService;
+import com.example.messenger.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 
 
 @Controller
@@ -26,13 +28,37 @@ public class HomePageController {
     @Autowired
     private ImageService imageService;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping("/home")
-    public String getHomePage(Authentication authentication, Model model){
+    public String getSelfHomePage(Authentication authentication, Model model){
         User currentUser = (User) authentication.getPrincipal();
-        model.addAttribute("avatarImageUrl", currentUser.getAvatarImageUrl());
+        model.addAttribute("avatarImageUrl", imageService.getAvatarImageUrlByUser(currentUser));
         model.addAttribute("user", currentUser);
+        model.addAttribute("profileBgImageUrl", imageService.getProfileBgImageUrlByUser(currentUser));
 
         return "selfHomePage";
+    }
+
+    @GetMapping("/home/{userId}")
+    public String getHomePage(@PathVariable("userId") Long userId, Authentication authentication, Model model) {
+        User currentUser = (authentication != null)? (User) authentication.getPrincipal() : null;
+        User secondUser = userService.findUserByUserId(userId);
+
+        if (currentUser != null && Objects.equals(currentUser.getUserId(), secondUser.getUserId())){
+            model.addAttribute("avatarImageUrl", imageService.getAvatarImageUrlByUser(currentUser));
+            model.addAttribute("user", currentUser);
+            model.addAttribute("profileBgImageUrl", imageService.getProfileBgImageUrlByUser(currentUser));
+
+            return "selfHomePage";
+        } else {
+            model.addAttribute("avatarImageUrl", imageService.getAvatarImageUrlByUser(secondUser));
+            model.addAttribute("user", secondUser);
+            model.addAttribute("profileBgImageUrl", imageService.getProfileBgImageUrlByUser(secondUser));
+
+            return "homePage";
+        }
     }
 
     @GetMapping("/image/{imageName}")
@@ -55,11 +81,11 @@ public class HomePageController {
         try {
             User currentUser = (User) authentication.getPrincipal();
             if (typeImage.equals("avatar")) {
-                String imageUrl = imageService.updateUserAvatarImageUrlByUserId(currentUser, image);
+                String imageUrl = imageService.updateUserAvatarImageUrlByUser(currentUser, image);
                 return ResponseEntity.ok().body(imageUrl);
             } else {
-                imageService.updateUserAvatarImageUrlByUserId(currentUser, image);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // доделать
+                String imageUrl = imageService.updateUserBgImageUrlByUser(currentUser, image);
+                return ResponseEntity.ok().body(imageUrl);
             }
         } catch (IOException e) {
             e.printStackTrace();

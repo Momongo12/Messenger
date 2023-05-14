@@ -6,15 +6,16 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 public interface ImageService {
-    String getAvatarimageUrlByUserId(Long userId);
+    String getAvatarImageUrlByUser(User user);
 
-    String getBgimageUrlByUserId(Long userId);
+    String getProfileBgImageUrlByUser(User user);
 
-    String updateUserAvatarImageUrlByUserId(User user, MultipartFile image) throws IOException;
+    String updateUserAvatarImageUrlByUser(User user, MultipartFile image) throws IOException;
 
-    String updateUserBgimageUrlByUserID(Long userId, MultipartFile image);
+    String updateUserBgImageUrlByUser(User user, MultipartFile image) throws IOException;
 
     void deleteAvatarImageByUser(User user);
+
 
     void deleteBgImageByUserId(User user);
 }

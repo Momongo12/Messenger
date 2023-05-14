@@ -62,6 +62,9 @@ body {
 }
 
 .menu .items {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
     list-style:none;
     margin: auto;
     padding: 0;
@@ -80,6 +83,10 @@ body {
 .menu .items .item-active {
     background-color:#5172c3;
     color: #FFF;
+}
+
+.menu .items .logout-button {
+    margin-top: auto;
 }
 
 .menu .items .item:hover {
@@ -143,7 +150,6 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    background: url("https://i.imgur.com/K7A78We.jpg");
     background-size: cover;
     background-position: center;
     padding: 5px 5px 10px 5px;
@@ -173,7 +179,7 @@ body {
     background-position: center;
 }
 
-.image-options {
+#avatar-image-options {
     position: absolute;
     bottom: -40px;
     left: 50%;
@@ -184,6 +190,18 @@ body {
     z-index: 10;
     animation-name: fadeIn;
     animation-duration: 0.5s;
+}
+
+#bg-image-options {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    padding: 10px;
+    z-index: 10;
+    animation-name: fadeIn;
+    animation-duration: 0.5s;
+    transform: translateX(-50%);
+    width: 130px;
 }
 
 @keyframes fadeIn {
@@ -239,6 +257,7 @@ body {
     border-radius: 20px;
     font-size: 13px;
     cursor: pointer;
+    transition: background-color 0.25s ease;
 }
 
 .user-details-text-input{
@@ -252,112 +271,3 @@ body {
     outline: none;
     border-bottom-color: #0077ff;
 }
-
-/*!* Стили для верхнего блока *!*/
-/*.user-info {*/
-/*    width: 100%;*/
-/*    display: flex;*/
-/*    flex-direction: column;*/
-/*    align-items: center;*/
-/*}*/
-
-/*.user-avatar {*/
-/*    width: 100px;*/
-/*    height: 100px;*/
-/*    border-radius: 50%;*/
-/*    margin-bottom: 10px;*/
-/*    background-image: url("https://via.placeholder.com/150");*/
-/*    background-size: cover;*/
-/*    background-position: center;*/
-/*    position: relative;*/
-/*}*/
-
-/*.user-avatar::after {*/
-/*    content: "";*/
-/*    display: block;*/
-/*    position: absolute;*/
-/*    top: -5px;*/
-/*    right: -5px;*/
-/*    width: 25px;*/
-/*    height: 25px;*/
-/*    border-radius: 50%;*/
-/*    background-color: #007bff;*/
-/*    background-image: url("https://via.placeholder.com/25");*/
-/*    background-size: cover;*/
-/*    background-position: center;*/
-/*    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);*/
-/*}*/
-
-/*.user-info h2 {*/
-/*    margin: 0;*/
-/*    font-size: 24px;*/
-/*    font-weight: bold;*/
-/*    text-align: center;*/
-/*}*/
-
-/*.user-info p {*/
-/*    margin: 0;*/
-/*    font-size: 16px;*/
-/*    text-align: center;*/
-/*    color: #6c757d;*/
-/*}*/
-
-/*!* Стили для нижнего блока *!*/
-/*.user-contact {*/
-/*    width: 100%;*/
-/*    display: flex;*/
-/*    flex-direction: column;*/
-/*    align-items: center;*/
-/*}*/
-
-/*.user-contact h3 {*/
-/*    margin: 0;*/
-/*    font-size: 18px;*/
-/*    font-weight: bold;*/
-/*    text-align: center;*/
-/*    margin-bottom: 10px;*/
-/*}*/
-
-/*.user-contact ul {*/
-/*    list-style: none;*/
-/*    padding: 0;*/
-/*    margin: 0;*/
-/*    text-align: center;*/
-/*}*/
-
-/*.user-contact ul li {*/
-/*    margin-bottom: 5px;*/
-/*}*/
-
-/*.user-contact ul li a {*/
-/*    text-decoration: none;*/
-/*    color: #6c757d;*/
-/*}*/
-
-/*!* Стили для кнопок edit, save и cancel *!*/
-/*.user-info .edit-button,*/
-/*.user-info .save-button,*/
-/*.user-info .cancel-button {*/
-/*    display: none;*/
-/*    margin-top: 10px;*/
-/*    background-color: #007bff;*/
-/*    color: #fff;*/
-/*    border: none;*/
-/*    padding: 5px 10px;*/
-/*    border-radius: 5px;*/
-/*    font-size: 16px;*/
-/*    cursor: pointer;*/
-/*}*/
-
-/*.user-info .edit-button {*/
-/*    display: block;*/
-/*}*/
-
-/*.user-info .save-button,*/
-/*.user-info .cancel-button {*/
-/*    margin-left: 10px;*/
-/*}*/
-
-/*.user-info.active .user-info-content {*/
-/*    display: none;*/
-/*}*/

@@ -1,7 +1,9 @@
 * {
   box-sizing: border-box;
 }
-
+input {
+  outline: none;
+}
 a {
   text-decoration: none;
 }
@@ -36,6 +38,9 @@ body {
 }
 
 .menu .items {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   list-style:none;
   margin: auto;
   padding: 0;
@@ -49,6 +54,10 @@ body {
   align-items: center;
   color: #9fb5ef;
   font-size: 17pt;
+}
+
+.menu .items .logout-button {
+  margin-top: auto;
 }
 
 .menu .items .item-active {
@@ -166,6 +175,10 @@ body {
   border: 3px solid #FAFAFA;
 }
 
+.offline {
+  display: none;
+}
+
 .desc-contact {
   height: 43px;
   width:50%;
@@ -275,7 +288,7 @@ body {
   color: white;
   font-family:'Montserrat', sans-serif;
   font-size: 14px;
-  margin-right: 10px;
+  margin: 0 10px 0 0;
 }
 
 .chat .messages-chat .text-block .info-message .username {
@@ -291,7 +304,7 @@ body {
 }
 
 .chat .messages-chat .text-block .message-text p {
-  margin-bottom: 10px;
+  margin: 0 0 10px 0;
 }
 
 .chat .messages-chat .text {
@@ -366,6 +379,66 @@ body {
   color:#515151;
 }
 
+.smiley-icon-container {
+  position: relative;
+}
+
+.smiley-menu {
+  background-color: rgb(36, 47, 61);
+  border: 1px solid #ddd;
+  position: absolute;
+  left: -80px;
+  top: -300px;
+  width: 235px;
+  padding: 5px;
+  height: 280px;
+  overflow-y: auto;
+  border-radius: 10px;
+  transition: max-height 0.3s ease-out;
+  animation: fadeInDown 0.3s;
+}
+
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.category-name {
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  margin: 8px 0px 8px 5px
+}
+
+.smiley-items {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.emoji-item {
+  margin: 5px;
+  cursor: pointer;
+}
+
+.smiley-menu i {
+  display: inline-block;
+  margin: 2px;
+  font-size: 12pt;
+}
+
+.smiley-menu i:hover {
+  cursor: pointer;
+}
+
+
+
 /*.chat .footer-chat .right {*/
 /*  position: absolute;*/
 /*  right: 40px;*/
@@ -401,4 +474,8 @@ body {
 
 .clickable {
   cursor: pointer;
+}
+
+::-webkit-scrollbar {
+  display: none;
 }

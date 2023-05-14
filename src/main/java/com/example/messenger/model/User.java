@@ -48,8 +48,6 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserImages userImages;
 
-    private String defaultAvatarImageUrl;
-
     public User(){
     }
 
@@ -148,14 +146,39 @@ public class User implements UserDetails {
     public String getAvatarImageUrl(){
         if (userImages != null && userImages.getAvatarImageUrl() != null){
             return userImages.getAvatarImageUrl();
+        }else if (userImages == null){
+            userImages = new UserImages(this);
         }
-        if (defaultAvatarImageUrl == null) {
+        if (userImages.getDefaultAvatarImageUrl() == null) {
             File directory = new File("src/main/resources/static/images/defaultImages");
             int filesNumber = directory.listFiles((dir, name) -> name.startsWith("defaultAvatar") && name.endsWith(".jpg")).length;
             int randomFileNumber = new Random().nextInt(filesNumber) + 1;
-            defaultAvatarImageUrl = "/images/defaultImages/" + "defaultAvatar" + randomFileNumber + ".jpg";
+            userImages.setDefaultAvatarImageUrl("/images/defaultImages/" + "defaultAvatar" + randomFileNumber + ".jpg");
         }
 
-        return defaultAvatarImageUrl;
+        return userImages.getDefaultAvatarImageUrl();
     }
+
+    public String getProfileBgImageUrl() {
+        if (userImages != null && userImages.getProfileBgImageUrl() != null) {
+            return userImages.getProfileBgImageUrl();
+        } else if (userImages == null) {
+            userImages = new UserImages(this);
+        }
+
+        if (userImages.getDefaultProfileBgImageUrl() == null) {
+            File directory = new File("src/main/resources/static/images/defaultImages");
+            int filesNumber = directory.listFiles((dir, name) -> name.startsWith("defaultProfileBg") && name.endsWith(".jpg")).length;
+            int randomFileNumber = new Random().nextInt(filesNumber) + 1;
+            userImages.setDefaultProfileBgImageUrl("/images/defaultImages/" + "defaultProfileBg" + randomFileNumber + ".jpg");
+        }
+
+        return userImages.getDefaultProfileBgImageUrl();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId);
+    }
+
 }

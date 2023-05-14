@@ -4,9 +4,11 @@ import com.example.messenger.model.Chat;
 import com.example.messenger.model.Message;
 import com.example.messenger.repository.ChatRepository;
 import com.example.messenger.repository.MessageRepository;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,8 +22,14 @@ public class ChatServiceImpl implements ChatService{
     private MessageRepository messageRepository;
 
     public Chat findByChatId(Long chatId) {
-        Optional<Chat> chat = chatRepository.findById(chatId);
-        return chat.orElse(null);
+        Optional<Chat> chatOptional = chatRepository.findById(chatId);
+        Chat chat;
+        if (chatOptional.isPresent()) {
+            chat = chatOptional.get();
+            Hibernate.initialize(chat.getMembers());
+            return chat;
+        }
+        return null;
     }
 
     public boolean saveMessage(Message message) {

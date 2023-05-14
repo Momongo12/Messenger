@@ -15,6 +15,4 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
     @Modifying
     @Query(value = "UPDATE chats SET last_message = :lastMessage WHERE chat_id = :chatId", nativeQuery = true)
     void updateLastMessage(@Param("chatId") Long chatId, @Param("lastMessage") String lastMessage);
-
-//    @Query(value = "SELECT * FROM ")
 }

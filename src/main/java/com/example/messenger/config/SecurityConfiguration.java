@@ -9,6 +9,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -24,17 +26,26 @@ public class SecurityConfiguration{
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .requestMatchers( "/registration", "/css/**", "/", "/resources/**").permitAll()
+                .requestMatchers( "/registration","/home/**","/css/**", "/", "/resources/**", "/images/**").permitAll()
                 .requestMatchers("/chats", "/home").hasRole("USER")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
                 .loginPage("/login")
-                .defaultSuccessUrl("/chats")
+                .loginProcessingUrl("/login")
+                .defaultSuccessUrl("/home")
                 .permitAll()
                 .and()
                 .logout()
-                .permitAll();
+                .permitAll()
+                .and()
+                .sessionManagement()
+                .maximumSessions(1)
+                .sessionRegistry(sessionRegistry())
+                .expiredUrl("/login?expired")
+                .maxSessionsPreventsLogin(true)
+                .and()
+                .invalidSessionUrl("/login");
         return http.build();
     }
 
@@ -54,5 +65,10 @@ public class SecurityConfiguration{
         daoAuthenticationProvider.setPasswordEncoder(bCryptPasswordEncoder());
         daoAuthenticationProvider.setUserDetailsService(userDetailsService());
         return daoAuthenticationProvider;
+    }
+
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
     }
 }
