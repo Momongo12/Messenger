@@ -1,0 +1,11 @@
+# application.properties.template
+# Конфигурационный шаблон приложения
+
+# Настройки базы данных
+spring.datasource.driverClassName=org.postgresql.Driver
+spring.datasource.url=jdbc:postgresql://localhost:5432/messenger
+spring.datasource.username=
+spring.datasource.password=
+#spring.jpa.show-sql=true
+spring.jpa.generate-ddl=false
+spring.jpa.hibernate.ddl-auto=update
