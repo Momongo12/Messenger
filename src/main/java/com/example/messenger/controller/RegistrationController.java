@@ -28,14 +28,11 @@ public class RegistrationController {
     @PostMapping("/registration")
     public String registration(@ModelAttribute("userForm") User userForm, BindingResult bindingResult, Model model){
         userValidator.validate(userForm, bindingResult);
-        System.out.println(userForm.getUsername());
-        System.out.println(userForm.getEmail());
-        System.out.println(userForm.getPassword());
 
         if (bindingResult.hasErrors()){
             return "login";
         }
-        if (!userService.saveUser(userForm)){
+        if (!userService.createUser(userForm)){
             System.out.println("User service error");
             return "login";
         }

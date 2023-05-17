@@ -8,6 +8,7 @@ import java.util.List;
 public interface ChatService {
     Chat findByChatId(Long chatId);
 
+
     boolean saveMessage(Message message);
 
     void saveChat(Chat chat);

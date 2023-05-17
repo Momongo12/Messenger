@@ -6,6 +6,7 @@ import com.example.messenger.model.Message;
 import com.example.messenger.model.User;
 import com.example.messenger.service.ChatService;
 import com.example.messenger.service.SmileysService;
+import com.example.messenger.service.UserService;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -24,9 +25,12 @@ public class ChatController {
     @Autowired
     private SmileysService smileysService;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping("/chats")
     public String getChats(Model model, Authentication authentication){
-        User user = (User) authentication.getPrincipal();
+        User user = userService.findUserByUserId(((User) authentication.getPrincipal()).getUserId());
         List<Chat> chats = user.getChats();
         model.addAttribute("chats", chats);
         model.addAttribute("currentUser", authentication.getPrincipal());

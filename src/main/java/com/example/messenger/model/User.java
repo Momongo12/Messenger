@@ -31,9 +31,6 @@ public class User implements UserDetails {
     @Column(name = "unique_username")
     private String uniqueUsername;
 
-    @Column(name = "short_info")
-    private String shortInfo;
-
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -42,11 +39,13 @@ public class User implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(name = "chat_users", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "chat_id"))
-
     private List<Chat> chats;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserImages userImages;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private MyUserDetails userDetails;
 
     public User(){
     }
@@ -136,7 +135,7 @@ public class User implements UserDetails {
     public List<Chat> getChatsForUsernamePrefix(String usernamePrefix){
         List<Chat> chatsForUsernamePrefix = new LinkedList<>();
         for (Chat chat: chats){
-            if (chat.getMembersNumber() == 2 && chat.getChatName(this).startsWith(usernamePrefix)){
+            if (chat.getMembersNumber() == 2 && chat.getInterLocutorForUser(this).getUniqueUsername().startsWith(usernamePrefix)){
                 chatsForUsernamePrefix.add(chat);
             }
         }
@@ -179,6 +178,15 @@ public class User implements UserDetails {
     @Override
     public int hashCode() {
         return Objects.hash(userId);
+    }
+
+    @Override
+    public boolean equals(Object user){
+        if (user instanceof User) {
+            return Objects.equals(this.getUserId(), ((User) user).getUserId());
+        }else {
+            return false;
+        }
     }
 
 }

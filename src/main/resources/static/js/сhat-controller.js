@@ -12,7 +12,7 @@ let chatId = null;
 
 
 setInterval(() => {
-    if (chatId != null) {
+    if (chatId != null && chatId !== '0') {
         xhr.open("GET", `/chats/${chatId}/messages`, true)
         xhr.onload = function () {
             const response = JSON.parse(xhr.responseText);
@@ -21,6 +21,18 @@ setInterval(() => {
         xhr.send();
     }
 }, 3000)
+
+setInterval(() => {
+    if (searchInput.value === '') {
+        xhr.open("GET", "/api/chats", true);
+        xhr.onload = function () {
+            const response = JSON.parse(xhr.responseText);
+            chatList.innerHTML = '';
+            displayChatsAndUsersList(response.chatsList);
+        }
+        xhr.send();
+    }
+}, 5000)
 
 function displayChatMessages(messages) {
     const chatMessages = document.getElementById('messages-chat');
@@ -89,13 +101,14 @@ chatList.addEventListener('click', event => {
         const chatTitle = document.getElementById('chat-title');
         chatTitle.textContent = event.target.closest('[data-chat-id]').querySelector(".name").innerText;
 
-        displayChatMessages(response.messages)
+        displayChatMessages(response.messages);
     };
     xhr.send();
 });
 
 sendMessageButton.addEventListener('click', event => {
     const currentDate = new Date();
+    let createChatFlag = true;
     if (chatId === '0'){
         const data = {
             lastMessage: messageInput.value,
@@ -105,15 +118,20 @@ sendMessageButton.addEventListener('click', event => {
         xhr.open('POST', "api/chats/" + secondInterlocutorUniqueUsername.substring(1), false);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.onload = function () {
-            const response = JSON.parse(xhr.responseText);
-            chatId = response.currentChatId;
-            chatList.innerHTML = '';
-            displayChatsAndUsersList(response.chatsList);
+            if (xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+                chatId = response.currentChatId;
+                chatList.innerHTML = '';
+                displayChatsAndUsersList(response.chatsList);
+            } else {
+                console.log("Creating chat error");
+                createChatFlag = false;
+            }
         };
         xhr.send(JSON.stringify(data));
     }
 
-    console.log(currentDate.toISOString());
+    if (!createChatFlag) return;
 
     const data = {
         chatId: chatId,
@@ -137,7 +155,7 @@ searchInput.addEventListener('input', (event) => {
     const inputValue = event.target.value.trim();
     if (inputValue.startsWith('@')) {
         const searchValue = inputValue.substring(1);
-        fetch('/search/users?username=' + searchValue)
+        fetch('/search/users?usernamePrefix=' + searchValue)
             .then(response => response.json())
             .then(data => {
                 chatList.innerHTML = '';
@@ -145,17 +163,18 @@ searchInput.addEventListener('input', (event) => {
                 displayChatsAndUsersList(data.usersList);
             })
             .catch(error => console.error(error));
-    }else if (inputValue === ''){
-        chatList.innerHTML = '';
-        xhr.onreadystatechange = function() {
-            if (this.readyState === 4 && this.status === 200) {
-                const response = JSON.parse(this.responseText);
-                displayChatsAndUsersList(response.chatsList);
-            }
-        };
-        xhr.open('GET', '/api/chats', true);
-        xhr.send();
     }
+    // else if (inputValue === ''){
+    //     chatList.innerHTML = '';
+    //     xhr.onreadystatechange = function() {
+    //         if (this.readyState === 4 && this.status === 200) {
+    //             const response = JSON.parse(this.responseText);
+    //             displayChatsAndUsersList(response.chatsList);
+    //         }
+    //     };
+    //     xhr.open('GET', '/api/chats', true);
+    //     xhr.send();
+    // }
 });
 
 emojiContainer.addEventListener('mouseover', function() {

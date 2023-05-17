@@ -57,6 +57,14 @@ public class Chat {
         }
         return null;
     }
+    public User getInterLocutorForUser(User currentUser){
+        for (User member: members){
+            if (!member.equals(currentUser)){
+                return member;
+            }
+        }
+        return null;
+    }
 
     public String getChatAvatarImageUrlForUser(User currentUser){
         for (User member: members){

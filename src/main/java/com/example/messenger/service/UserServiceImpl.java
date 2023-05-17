@@ -2,6 +2,8 @@ package com.example.messenger.service;
 
 
 import com.example.messenger.dto.UserInfoDto;
+import com.example.messenger.model.Chat;
+import com.example.messenger.model.MyUserDetails;
 import com.example.messenger.model.Role;
 import com.example.messenger.model.User;
 import com.example.messenger.repository.UserRepository;
@@ -14,8 +16,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service("UserServiceImpl")
 public class UserServiceImpl implements UserService {
@@ -29,7 +33,11 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private SessionRegistry sessionRegistry;
 
-    public boolean saveUser(User user) {
+    @Autowired
+    private ChatService chatService;
+
+    @Transactional
+    public boolean createUser(User user) {
         User userFromDb = userRepository.findByEmail(user.getEmail());
 
         if (userFromDb != null){
@@ -38,9 +46,36 @@ public class UserServiceImpl implements UserService {
 
         user.setRoles(Collections.singleton(new Role("ROLE_USER")));
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+
+        MyUserDetails userDetails = new MyUserDetails();
+        userDetails.setUser(user);
+        user.setUserDetails(userDetails);
+
         userRepository.save(user);
 
         return true;
+    }
+
+    @Transactional
+    public void createChat(Chat chat, User firstUser, String secondUserUniqueUsername) throws IllegalArgumentException {
+        User secondUser = getUserByUniqueUsername(secondUserUniqueUsername);
+
+        if (secondUser == null) throw new IllegalArgumentException();
+
+        List<User> usersList = new ArrayList<>();
+        usersList.add(firstUser);
+        usersList.add(secondUser);
+
+        chat.setMembers(usersList);
+        chatService.saveChat(chat);
+
+//        System.out.println(firstUser.getChats() != null);
+//        firstUser.getChats().add(chat);
+//        userRepository.save(firstUser);
+//
+//        System.out.println(secondUser.getChats() != null);
+//        secondUser.getChats().add(chat);
+//        userRepository.save(secondUser);
     }
 
     public User findByEmail(String email){
@@ -60,13 +95,31 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByUniqueUsernameStartingWith(usernamePrefix);
     }
 
-    public void updateUserInfo(UserInfoDto userInfoDto, User user){
-        if (userInfoDto.getUserName() != null) {
-            user.setUsername(userInfoDto.getUserName());
+    public void updateUserDetails(UserInfoDto userInfoDto, User user) throws IllegalArgumentException{
+        User userWithNewUniqueUsername = userRepository.findByUniqueUsername(userInfoDto.getUniqueUsername());
+
+        if (userWithNewUniqueUsername != null && !user.equals(userWithNewUniqueUsername)) {
+            throw new IllegalArgumentException();
+        }else {
+            user.setUniqueUsername(userInfoDto.getUniqueUsername());
         }
-        if (userInfoDto.getUserDescription() !=null) {
-            user.setShortInfo(userInfoDto.getUserDescription());
+
+        if (userInfoDto.getUsername() != null) {
+            user.setUsername(userInfoDto.getUsername());
         }
+        if (userInfoDto.getUserDescription() != null) {
+            user.getUserDetails().setShortInfo(userInfoDto.getUserDescription());
+        }
+        if (userInfoDto.getEmail() != null) {
+            user.setEmail(userInfoDto.getEmail());
+        }
+        if (userInfoDto.getPhoneNumber() != null) {
+            user.getUserDetails().setPhoneNumber(userInfoDto.getPhoneNumber());
+        }
+
+        user.getUserDetails().setPublicProfileFlag(userInfoDto.getIsPublicProfile());
+        user.getUserDetails().setShowingEmailFlag(userInfoDto.getIsShowingEmail());
+
         userRepository.save(user);
     }
 
@@ -81,7 +134,6 @@ public class UserServiceImpl implements UserService {
                 User user = (User) principal;
                 if (user.getUsername().equals(username)) {
                     List<SessionInformation> sessions = sessionRegistry.getAllSessions(principal, false);
-                    System.out.println(sessions);
                     if (!sessions.isEmpty()) {
                         return true;
                     }

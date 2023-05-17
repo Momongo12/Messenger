@@ -34,7 +34,7 @@
                 <div class="user-details-info">
                     <div class="user-details-text">
                         <h3 class="user-name" th:text="${user.getUsername()}"></h3>
-                        <p class="user-description" th:text="${user.getShortInfo()}"></p>
+                        <p class="user-description" th:text="${user.getUserDetails().getShortInfo()}"></p>
                         <button class="copy-link-button" th:data-user-id="${user.getUserId()}">Copy Link</button>
                     </div>
                 </div>

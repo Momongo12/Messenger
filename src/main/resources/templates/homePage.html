@@ -16,7 +16,7 @@
                 <div class="user-details-info">
                     <div class="user-details-text">
                         <h3 class="user-name" th:text="${user.getUsername()}"></h3>
-                        <p class="user-description" th:text="${user.getShortInfo()}"></p>
+                        <p class="user-description" th:text="${user.getUserDetails().getShortInfo()}"></p>
                         <a th:href="'/chats/user=' + ${user.getUserId()}"><button class="write-message-button copy-link-button">Write message</button></a>
                     </div>
                 </div>

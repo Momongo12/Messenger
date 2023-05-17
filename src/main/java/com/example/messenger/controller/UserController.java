@@ -5,9 +5,9 @@ import com.example.messenger.model.Chat;
 import com.example.messenger.model.User;
 import com.example.messenger.service.ChatService;
 import com.example.messenger.service.UserService;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -24,9 +24,9 @@ public class UserController {
     private ChatService chatService;
 
     @GetMapping("/api/chats")
-    public Map<String, Object> getChatsUser(Authentication authentication){
+    public Map<String, Object> getChatsUser(Authentication authentication) {
         Map<String, Object> response = new HashMap<>();
-        User currentUser = (User) authentication.getPrincipal();
+        User currentUser = userService.findUserByUserId(((User) authentication.getPrincipal()).getUserId());
 
         List<Chat> chats = currentUser.getChats();
         List<Map<String, Object>> chatsList = getChatsList(chats, currentUser);
@@ -38,74 +38,86 @@ public class UserController {
     @PostMapping("/user/info")
     public void updateUserInfo(@RequestBody UserInfoDto userInfoDto, Authentication authentication) {
         User currentUser = (User) authentication.getPrincipal();
-        userService.updateUserInfo(userInfoDto, currentUser);
+        userService.updateUserDetails(userInfoDto, currentUser);
     }
 
     @PostMapping("api/chats/{secondInterlocutorUniqueUsername}")
-    public Map<String, Object> createChat(@RequestBody Chat chat, @PathVariable String secondInterlocutorUniqueUsername,
-                                          Authentication authentication){
+    public ResponseEntity<Map<String, Object>> createChat(@RequestBody Chat chat, @PathVariable String secondInterlocutorUniqueUsername,
+                                                     Authentication authentication) {
         Map<String, Object> response = new HashMap<>();
-
         User currentUser = (User) authentication.getPrincipal();
-        User secondUser = userService.getUserByUniqueUsername(secondInterlocutorUniqueUsername);
-        List<User> usersList = new ArrayList<>();
-        usersList.add(currentUser);
-        usersList.add(secondUser);
-        chat.setMembers(usersList);
 
-        chatService.saveChat(chat);
+        try {
+            userService.createChat(chat, currentUser, secondInterlocutorUniqueUsername);
 
-        List<Chat> chats = currentUser.getChats();
-        chats.add(chat);
-        userService.saveUser(currentUser);
-        List<Map<String, Object>> chatsList = getChatsList(chats, currentUser);
+            List<Map<String, Object>> chatsList = getChatsList(currentUser.getChats(), currentUser);
 
-        response.put("currentChatId", chat.getChatId());
-        response.put("chatsList", chatsList);
+            response.put("currentChatId", chat.getChatId());
+            response.put("chatsList", chatsList);
 
-        return response;
+            return ResponseEntity.ok().body(response);
+        }catch (Exception ex) {
+            ex.printStackTrace();
+            System.err.println(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
 
     @GetMapping("/search/users")
-    public Map<String, Object> getChatsUserAndAnotherFoundUsers(@RequestParam String username, Authentication authentication){
+    public Map<String, Object> getChatsUserAndAnotherFoundUsers(@RequestParam String usernamePrefix, Authentication authentication) {
         Map<String, Object> response = new HashMap<>();
         User currentUser = (User) authentication.getPrincipal();
 
-        List<Chat> chats = currentUser.getChatsForUsernamePrefix(username);
+        List<Chat> chats = currentUser.getChatsForUsernamePrefix(usernamePrefix);
         List<Map<String, Object>> chatsList = getChatsList(chats, currentUser);
         response.put("chatsList", chatsList);
 
-        List<User> users = userService.getUsersByUnigueUsernamePrefix(username);
-        List<Map<String, Object>> usersList = new ArrayList<>();
-
-        for (User user: users){
-            Map<String, Object> userMap = new HashMap<>();
-            userMap.put("chatId", 0);
-            userMap.put("username", user.getUsername());
-            userMap.put("uniqueUsername", user.getUniqueUsername());
-
-            usersList.add(userMap);
-        }
-
-        response.put("usersList", usersList);
+        response.put("usersList", getListUsersByUnigueUsernamePrefixWithoutExistChats(usernamePrefix, chats, currentUser));
 
         return response;
     }
 
-    private List<Map<String, Object>> getChatsList(List<Chat> chats, User currentUser){
+    private List<Map<String, Object>> getChatsList(List<Chat> chats, User currentUser) {
         List<Map<String, Object>> chatsList = new ArrayList<>();
 
-        for (Chat chat: chats){
+        for (Chat chat : chats) {
             Map<String, Object> chatMap = new HashMap<>();
             chatMap.put("chatId", chat.getChatId());
             chatMap.put("chatAvatarImageUrl", chat.getChatAvatarImageUrlForUser(currentUser));
             chatMap.put("chatName", chat.getChatName(currentUser));
             chatMap.put("lastMessage", chat.getLastMessage());
-            chatMap.put("interlocutorStatus", userService.isUserOnline(chat.getChatName(currentUser)) ? "online": "offline");
+            chatMap.put("interlocutorStatus", userService.isUserOnline(chat.getChatName(currentUser)) ? "online" : "offline");
 
             chatsList.add(chatMap);
         }
         return chatsList;
+    }
+
+    private List<Map<String, Object>> getListUsersByUnigueUsernamePrefixWithoutExistChats(String usernamePrefix,
+                                                                                          List<Chat> chats, User currentUser) {
+        List<User> users = userService.getUsersByUnigueUsernamePrefix(usernamePrefix);
+        List<Map<String, Object>> usersList = new ArrayList<>();
+
+        for (User user : users) {
+            if (user.equals(currentUser) || !user.getUserDetails().isPublicProfileFlag()) continue;
+            boolean chatWithThisUserExist = false;
+            for (Chat chat : chats) {
+                if (chat.getInterLocutorId(currentUser).equals(user.getUserId())) {
+                    chatWithThisUserExist = true;
+                    break;
+                }
+            }
+            if (!chatWithThisUserExist) {
+                Map<String, Object> userMap = new HashMap<>();
+                userMap.put("chatId", 0);
+                userMap.put("username", user.getUsername());
+                userMap.put("uniqueUsername", user.getUniqueUsername());
+                userMap.put("chatAvatarImageUrl", user.getAvatarImageUrl());
+                usersList.add(userMap);
+            }
+        }
+
+        return usersList;
     }
 }
