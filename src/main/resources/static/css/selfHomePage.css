@@ -157,10 +157,25 @@ body {
 
 .user-details-info {
     display: flex;
-    align-items: start;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: space-between;
     background-color: white;
     height: 52%;
+}
+
+.user-details-contacts {
+    display: flex;
+    text-align: center;
+    justify-content: space-between;
+    background-color: white;
+}
+
+.user-details-contacts .phone-number {
+    margin-right: 15px;
+}
+
+.user-details-contacts .email {
+    margin-left: 15px;
 }
 
 .user-avatar {

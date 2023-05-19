@@ -70,7 +70,7 @@
           </div>
         </div>
       </div>
-      <div class="footer-chat" style="display: none">
+      <div class="footer-chat" th:style="'display: '+ ${displayInputField? 'flex': 'none'}">
         <input id="message-input" type="text" class="write-message" placeholder="Type your message here">
         <div class="smiley-icon-container">
           <i class="icon fa fa-smile-o clickable" style="font-size:25pt;" aria-hidden="true"></i>

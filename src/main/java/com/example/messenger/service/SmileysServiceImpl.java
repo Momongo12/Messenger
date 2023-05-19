@@ -2,6 +2,7 @@ package com.example.messenger.service;
 
 import com.example.messenger.model.Smileys;
 import com.example.messenger.model.SmileysCategory;
+import com.example.messenger.service.SmileysService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
@@ -9,7 +10,7 @@ import java.io.File;
 import java.io.IOException;
 
 @Service
-public class SmileysServiceImpl implements SmileysService{
+public class SmileysServiceImpl implements SmileysService {
 
     public SmileysCategory[] getSmileysCategoriesList(){
         ObjectMapper objectMapper = new ObjectMapper();

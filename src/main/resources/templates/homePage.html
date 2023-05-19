@@ -19,6 +19,7 @@
                         <p class="user-description" th:text="${user.getUserDetails().getShortInfo()}"></p>
                         <a th:href="'/chats/user=' + ${user.getUserId()}"><button class="write-message-button copy-link-button">Write message</button></a>
                     </div>
+                    <th:block th:replace="~{selfHomePage :: user-details-contacts}"></th:block>
                 </div>
             </div>
         </div>

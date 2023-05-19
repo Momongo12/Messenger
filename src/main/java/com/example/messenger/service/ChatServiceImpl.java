@@ -4,6 +4,7 @@ import com.example.messenger.model.Chat;
 import com.example.messenger.model.Message;
 import com.example.messenger.repository.ChatRepository;
 import com.example.messenger.repository.MessageRepository;
+import com.example.messenger.service.ChatService;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ChatServiceImpl implements ChatService{
+public class ChatServiceImpl implements ChatService {
 
     @Autowired
     private ChatRepository chatRepository;
@@ -31,7 +32,7 @@ public class ChatServiceImpl implements ChatService{
         return null;
     }
 
-    public boolean saveMessage(Message message) {
+    public boolean saveMessage(Message message){
         try {
             messageRepository.save(message);
             return true;

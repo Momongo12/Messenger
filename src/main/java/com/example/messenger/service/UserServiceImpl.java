@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Service("UserServiceImpl")
 public class UserServiceImpl implements UserService {
@@ -68,14 +67,6 @@ public class UserServiceImpl implements UserService {
 
         chat.setMembers(usersList);
         chatService.saveChat(chat);
-
-//        System.out.println(firstUser.getChats() != null);
-//        firstUser.getChats().add(chat);
-//        userRepository.save(firstUser);
-//
-//        System.out.println(secondUser.getChats() != null);
-//        secondUser.getChats().add(chat);
-//        userRepository.save(secondUser);
     }
 
     public User findByEmail(String email){

@@ -35,6 +35,7 @@ public class ChatController {
         model.addAttribute("chats", chats);
         model.addAttribute("currentUser", authentication.getPrincipal());
         model.addAttribute("smileysCategoriesList", smileysService.getSmileysCategoriesList());
+        model.addAttribute("displayInputField", false);
 
         return "chat";
     }
@@ -60,6 +61,7 @@ public class ChatController {
         model.addAttribute("chatName", chat.getChatName(currentUser));
         model.addAttribute("messages", getChatMessagesList(chat.getChatId()));
         model.addAttribute("smileysCategoriesList", smileysService.getSmileysCategoriesList());
+        model.addAttribute("displayInputField", true);
 
         return "chat";
     }
@@ -74,6 +76,7 @@ public class ChatController {
         model.addAttribute("currentUser", authentication.getPrincipal());
         model.addAttribute("messages", getChatMessagesList(chat.getChatId()));
         model.addAttribute("smileysCategoriesList", smileysService.getSmileysCategoriesList());
+        model.addAttribute("displayInputField", true);
 
         return "chat";
     }
@@ -95,7 +98,12 @@ public class ChatController {
         Map<String, Object> response = new HashMap<>();
         message.setSender((User) authentication.getPrincipal());
         message.setMessageId(null);
-        boolean statusSaveMessage = chatService.saveMessage(message);
+        boolean statusSaveMessage = false;
+        try {
+            statusSaveMessage = chatService.saveMessage(message);
+        }catch (Exception ex){
+            System.out.println(ex.getMessage());
+        }
 
         response.put("status", statusSaveMessage? 200 : 500);
 

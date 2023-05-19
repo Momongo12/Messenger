@@ -4,6 +4,7 @@ package com.example.messenger.service;
 import com.example.messenger.model.User;
 import com.example.messenger.model.UserImages;
 import com.example.messenger.repository.UserImagesRepository;
+import com.example.messenger.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -20,7 +21,7 @@ import java.util.Random;
 import java.util.UUID;
 
 @Service
-public class ImageServiceImpl implements ImageService{
+public class ImageServiceImpl implements ImageService {
 
     @Autowired
     private UserImagesRepository userImagesRepository;
@@ -121,7 +122,7 @@ public class ImageServiceImpl implements ImageService{
 
 
     public void deleteBgImageByUserId(User user) {
-        String imageUrl = user.getUserImages().getAvatarImageUrl();
+        String imageUrl = user.getUserImages().getProfileBgImageUrl();
         String imageName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
 
         try {

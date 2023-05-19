@@ -37,6 +37,10 @@
                         <p class="user-description" th:text="${user.getUserDetails().getShortInfo()}"></p>
                         <button class="copy-link-button" th:data-user-id="${user.getUserId()}">Copy Link</button>
                     </div>
+                    <div class="user-details-contacts" th:fragment="user-details-contacts">
+                        <h4 class="email" th:if="${user.getUserDetails().isShowingEmailFlag()}" th:text="${user.getEmail()}"></h4>
+                        <h4 class="phone-number" th:if="${user.getUserDetails().getPhoneNumber() != null}" th:text="${user.getUserDetails().getPhoneNumber()}"></h4>
+                    </div>
                 </div>
             </div>
         </div>
