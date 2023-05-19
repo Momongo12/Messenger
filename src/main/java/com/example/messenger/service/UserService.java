@@ -7,6 +7,7 @@ import com.example.messenger.model.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserService extends UserDetailsService {
     User findByEmail(String email);
@@ -14,9 +15,8 @@ public interface UserService extends UserDetailsService {
     User findUserByUserId(Long userId);
     boolean createUser(User user);
 
-    void createChat(Chat chat, User firstUser, String secondUserUniqueUsername) throws IllegalArgumentException;
-
-    List<User> getUsersByUnigueUsernamePrefix(String usernamePrefix);
+    List<Map<String, Object>> getUsersMapsListByUniqueUsernamePrefixWithoutExistChats(String usernamePrefix,
+                                                                                          List<Chat> chats, User currentUser);
 
     void updateUserDetails(UserInfoDto userInfoDto, User user) throws IllegalArgumentException;
 

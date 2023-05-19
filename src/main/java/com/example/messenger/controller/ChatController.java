@@ -9,6 +9,8 @@ import com.example.messenger.service.SmileysService;
 import com.example.messenger.service.UserService;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,6 +34,7 @@ public class ChatController {
     public String getChats(Model model, Authentication authentication){
         User user = userService.findUserByUserId(((User) authentication.getPrincipal()).getUserId());
         List<Chat> chats = user.getChats();
+
         model.addAttribute("chats", chats);
         model.addAttribute("currentUser", authentication.getPrincipal());
         model.addAttribute("smileysCategoriesList", smileysService.getSmileysCategoriesList());
@@ -59,11 +62,33 @@ public class ChatController {
         model.addAttribute("chats", chats);
         model.addAttribute("currentUser", authentication.getPrincipal());
         model.addAttribute("chatName", chat.getChatName(currentUser));
-        model.addAttribute("messages", getChatMessagesList(chat.getChatId()));
+        model.addAttribute("messages", chatService.getChatMessagesMapsList(chat.getChatId()));
         model.addAttribute("smileysCategoriesList", smileysService.getSmileysCategoriesList());
         model.addAttribute("displayInputField", true);
 
         return "chat";
+    }
+
+    @PostMapping("api/chats/{secondInterlocutorUniqueUsername}")
+    public ResponseEntity<Map<String, Object>> createChat(@RequestBody Chat chat, @PathVariable String secondInterlocutorUniqueUsername,
+                                                          Authentication authentication) {
+        Map<String, Object> response = new HashMap<>();
+        User currentUser = (User) authentication.getPrincipal();
+
+        try {
+            chatService.createChat(chat, currentUser, secondInterlocutorUniqueUsername);
+
+            List<Map<String, Object>> chatsList = chatService.convertChatsListToChatsMapList(currentUser.getChats(), currentUser);
+
+            response.put("currentChatId", chat.getChatId());
+            response.put("chatsList", chatsList);
+
+            return ResponseEntity.ok().body(response);
+        }catch (Exception ex) {
+            ex.printStackTrace();
+            System.err.println(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("/chats/chat={chatId}")
@@ -74,7 +99,7 @@ public class ChatController {
 
         model.addAttribute("chats", chats);
         model.addAttribute("currentUser", authentication.getPrincipal());
-        model.addAttribute("messages", getChatMessagesList(chat.getChatId()));
+        model.addAttribute("messages", chatService.getChatMessagesMapsList(chat.getChatId()));
         model.addAttribute("smileysCategoriesList", smileysService.getSmileysCategoriesList());
         model.addAttribute("displayInputField", true);
 
@@ -86,7 +111,7 @@ public class ChatController {
     public Map<String, Object> getChatMessages(@PathVariable Long chatId) {
         Map<String, Object> response = new HashMap<>();
 
-        response.put("messages", getChatMessagesList(chatId));
+        response.put("messages", chatService.getChatMessagesMapsList(chatId));
         return response;
     }
 
@@ -98,49 +123,13 @@ public class ChatController {
         Map<String, Object> response = new HashMap<>();
         message.setSender((User) authentication.getPrincipal());
         message.setMessageId(null);
-        boolean statusSaveMessage = false;
-        try {
-            statusSaveMessage = chatService.saveMessage(message);
-        }catch (Exception ex){
-            System.out.println(ex.getMessage());
-        }
+        boolean statusSaveMessage = chatService.saveMessage(message);
 
+        List<Map<String, Object>> messageList = chatService.getChatMessagesMapsList(message.getChatId());
+
+        response.put("messages", messageList);
         response.put("status", statusSaveMessage? 200 : 500);
 
-        List<Map<String, Object>> messageList = getChatMessagesList(message.getChatId());
-        response.put("messages", messageList);
-
         return response;
-    }
-
-    private List<Map<String, Object>> getChatMessagesList(Long chatId){
-        List<Message> messages = chatService.getChatMessages(chatId);
-        List<Map<String, Object>> messageList = new ArrayList<>();
-        Long lastSenderId;
-        for (int i = 0; i < messages.size(); i++){
-            Message message = messages.get(i);
-            Map<String, Object> messageMap = new HashMap<>();
-            messageMap.put("text", message.getText());
-            messageMap.put("senderId", message.getSender().getUserId());
-            messageMap.put("senderName", message.getSender().getUsername());
-            messageMap.put("departureTime", message.getTimeByFormat("HH:mm"));
-            messageMap.put("userAvatarUrl", message.getSender().getAvatarImageUrl());
-
-            List<String> subMessages = new ArrayList<>();
-
-            lastSenderId = message.getSender().getUserId();
-
-            for (int j = i + 1; j < messages.size(); j++, i++){
-                Message subMessage = messages.get(j);
-                if (Objects.equals(subMessage.getSender().getUserId(), lastSenderId)) {
-                    subMessages.add(subMessage.getText());
-                }else {
-                    break;
-                }
-            }
-            messageMap.put("subMessages", subMessages);
-            messageList.add(messageMap);
-        }
-        return messageList;
     }
 }

@@ -16,9 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Service("UserServiceImpl")
 public class UserServiceImpl implements UserService {
@@ -31,9 +29,6 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private SessionRegistry sessionRegistry;
-
-    @Autowired
-    private ChatService chatService;
 
     @Transactional
     public boolean createUser(User user) {
@@ -55,20 +50,6 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
-    @Transactional
-    public void createChat(Chat chat, User firstUser, String secondUserUniqueUsername) throws IllegalArgumentException {
-        User secondUser = getUserByUniqueUsername(secondUserUniqueUsername);
-
-        if (secondUser == null) throw new IllegalArgumentException();
-
-        List<User> usersList = new ArrayList<>();
-        usersList.add(firstUser);
-        usersList.add(secondUser);
-
-        chat.setMembers(usersList);
-        chatService.saveChat(chat);
-    }
-
     public User findByEmail(String email){
         return userRepository.findByEmail(email);
     }
@@ -82,8 +63,30 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByEmail(email);
     }
 
-    public List<User> getUsersByUnigueUsernamePrefix(String usernamePrefix) {
-        return userRepository.findByUniqueUsernameStartingWith(usernamePrefix);
+    public List<Map<String, Object>> getUsersMapsListByUniqueUsernamePrefixWithoutExistChats(String usernamePrefix, List<Chat> chats, User currentUser) {
+        List<User> users = userRepository.findByUniqueUsernameStartingWith(usernamePrefix);
+        List<Map<String, Object>> usersList = new ArrayList<>();
+
+        for (User user : users) {
+            if (user.equals(currentUser) || !user.getUserDetails().isPublicProfileFlag()) continue;
+            boolean chatWithThisUserExist = false;
+            for (Chat chat : chats) {
+                if (chat.getInterLocutorId(currentUser).equals(user.getUserId())) {
+                    chatWithThisUserExist = true;
+                    break;
+                }
+            }
+            if (!chatWithThisUserExist) {
+                Map<String, Object> userMap = new HashMap<>();
+                userMap.put("chatId", 0);
+                userMap.put("username", user.getUsername());
+                userMap.put("uniqueUsername", user.getUniqueUsername());
+                userMap.put("chatAvatarImageUrl", user.getAvatarImageUrl());
+                usersList.add(userMap);
+            }
+        }
+
+        return usersList;
     }
 
     public void updateUserDetails(UserInfoDto userInfoDto, User user) throws IllegalArgumentException{

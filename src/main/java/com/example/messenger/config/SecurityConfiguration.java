@@ -37,13 +37,17 @@ public class SecurityConfiguration{
                 .permitAll()
                 .and()
                 .logout()
+                .logoutSuccessUrl("/login?logout")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .clearAuthentication(true)
                 .permitAll()
                 .and()
                 .sessionManagement()
                 .maximumSessions(1)
                 .sessionRegistry(sessionRegistry())
                 .expiredUrl("/login?expired")
-                .maxSessionsPreventsLogin(true)
+                .maxSessionsPreventsLogin(false)
                 .and()
                 .invalidSessionUrl("/login");
         return http.build();
