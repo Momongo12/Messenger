@@ -6,6 +6,12 @@ import lombok.Data;
 import java.sql.Date;
 import java.util.List;
 
+/**
+ * The Chat entity represents a chat in the application.
+ *
+ * @version 1.0
+ * @author Denis Moskvin
+ */
 @Entity
 @Table(name = "chats")
 @Data
@@ -33,42 +39,70 @@ public class Chat {
     @JoinTable(name = "chat_users", joinColumns = @JoinColumn(name = "chat_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> members;
-    public Chat(){
 
+    /**
+     * Default constructor for the Chat class.
+     */
+    public Chat() {
     }
 
-    public String getChatName(User currentUser){
+    /**
+     * Retrieves the chat name based on the current user.
+     *
+     * @param currentUser the current user
+     * @return the chat name
+     */
+    public String getChatName(User currentUser) {
         if (membersNumber != 2) {
             return chatName;
         }
-        for (User member: members){
-            if (!member.equals(currentUser)){
+        for (User member : members) {
+            if (!member.equals(currentUser)) {
                 return member.getUsername();
             }
         }
         return chatName;
     }
 
-    public Long getInterLocutorId(User currentUser){
-        for (User member: members){
-            if (!member.equals(currentUser)){
+    /**
+     * Retrieves the interlocutor's user ID based on the current user.
+     *
+     * @param currentUser the current user
+     * @return the interlocutor's user ID
+     */
+    public Long getInterlocutorId(User currentUser) {
+        for (User member : members) {
+            if (!member.equals(currentUser)) {
                 return member.getUserId();
             }
         }
         return null;
     }
-    public User getInterLocutorForUser(User currentUser){
-        for (User member: members){
-            if (!member.equals(currentUser)){
+
+    /**
+     * Retrieves the interlocutor's user based on the current user.
+     *
+     * @param currentUser the current user
+     * @return the interlocutor's user
+     */
+    public User getInterlocutorForUser(User currentUser) {
+        for (User member : members) {
+            if (!member.equals(currentUser)) {
                 return member;
             }
         }
         return null;
     }
 
-    public String getChatAvatarImageUrlForUser(User currentUser){
-        for (User member: members){
-            if (!member.equals(currentUser)){
+    /**
+     * Retrieves the chat avatar image URL for the current user.
+     *
+     * @param currentUser the current user
+     * @return the chat avatar image URL
+     */
+    public String getChatAvatarImageUrlForUser(User currentUser) {
+        for (User member : members) {
+            if (!member.equals(currentUser)) {
                 return member.getAvatarImageUrl();
             }
         }

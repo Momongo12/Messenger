@@ -18,6 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+/**
+ * The UserServiceImpl class provides an implementation of the {@link UserService} interface.
+ *
+ * @version 1.0
+ * @author Denis Moskvin
+ */
 @Service("UserServiceImpl")
 public class UserServiceImpl implements UserService {
 
@@ -71,7 +77,7 @@ public class UserServiceImpl implements UserService {
             if (user.equals(currentUser) || !user.getUserDetails().isPublicProfileFlag()) continue;
             boolean chatWithThisUserExist = false;
             for (Chat chat : chats) {
-                if (chat.getInterLocutorId(currentUser).equals(user.getUserId())) {
+                if (chat.getInterlocutorId(currentUser).equals(user.getUserId())) {
                     chatWithThisUserExist = true;
                     break;
                 }

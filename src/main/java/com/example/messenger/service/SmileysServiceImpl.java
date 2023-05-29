@@ -9,6 +9,12 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Implementation of the {@link SmileysService} interface.
+ *
+ * @version 1.0
+ * @author Denis Moskvin
+ */
 @Service
 public class SmileysServiceImpl implements SmileysService {
 

@@ -3,6 +3,12 @@ package com.example.messenger.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+/**
+ * The UserImages entity represents the images associated with a user.
+ *
+ * @version 1.0
+ * @author Denis Moskvin
+ */
 @Entity
 @Table(name = "user_images")
 @Data

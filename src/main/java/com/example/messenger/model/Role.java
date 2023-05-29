@@ -3,9 +3,13 @@ package com.example.messenger.model;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.Set;
 
-
+/**
+ * The Role entity represents a user role in the application.
+ *
+ * @version 1.0
+ * @author Denis Moskvin
+ */
 @Entity
 @Table(name = "roles")
 public class Role implements GrantedAuthority {
@@ -36,14 +40,6 @@ public class Role implements GrantedAuthority {
     public void setName(String name) {
         this.name = name;
     }
-
-    //    public Set<User> getUsers() {
-    //        return users;
-    //    }
-    //
-    //    public void setUsers(Set<User> users) {
-    //        this.users = users;
-    //    }
 
     @Override
     public String getAuthority() {

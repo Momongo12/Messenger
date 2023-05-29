@@ -7,6 +7,7 @@ import com.example.messenger.model.User;
 import com.example.messenger.service.ChatService;
 import com.example.messenger.service.SmileysService;
 import com.example.messenger.service.UserService;
+import lombok.extern.log4j.Log4j2;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
+/**
+ * This is the ChatController class that handles requests related to chats.
+ *
+ * @version 1.0
+ * @author Denis Moskvin
+ */
 @Controller
+@Log4j2
 public class ChatController {
 
     @Autowired
@@ -30,8 +38,15 @@ public class ChatController {
     @Autowired
     private UserService userService;
 
+    /**
+     * Retrieves the list of chats for the authenticated user.
+     *
+     * @param model          the model to be populated with data
+     * @param authentication the authentication object containing the current user's information
+     * @return the view name for rendering the chat page
+     */
     @GetMapping("/chats")
-    public String getChats(Model model, Authentication authentication){
+    public String getChats(Model model, Authentication authentication) {
         User user = userService.findUserByUserId(((User) authentication.getPrincipal()).getUserId());
         List<Chat> chats = user.getChats();
 
@@ -43,14 +58,22 @@ public class ChatController {
         return "chat";
     }
 
+    /**
+     * Retrieves a specific chat based on the user ID of the other participant.
+     *
+     * @param model          the model to be populated with data
+     * @param userId         the user ID of the other participant in the chat
+     * @param authentication the authentication object containing the current user's information
+     * @return the view name for rendering the chat page
+     */
     @GetMapping("/chats/user={userId}")
-    public String getChatByUserId(Model model, @PathVariable Long userId, Authentication authentication){
+    public String getChatByUserId(Model model, @PathVariable Long userId, Authentication authentication) {
         User currentUser = (User) authentication.getPrincipal();
         List<Chat> chats = currentUser.getChats();
         Chat chat = null;
 
-        for(Chat cht: chats) {
-            if (Objects.equals(cht.getInterLocutorId(currentUser), userId)){
+        for (Chat cht : chats) {
+            if (Objects.equals(cht.getInterlocutorId(currentUser), userId)) {
                 chat = cht;
             }
         }
@@ -69,6 +92,14 @@ public class ChatController {
         return "chat";
     }
 
+    /**
+     * Creates a new chat between the current user and the user with the specified username.
+     *
+     * @param chat                       the chat object containing the details of the new chat
+     * @param secondInterlocutorUniqueUsername the unique username of the second user
+     * @param authentication             the authentication object containing the current user's information
+     * @return a response entity with the current chat ID and the list of chats for the current user
+     */
     @PostMapping("api/chats/{secondInterlocutorUniqueUsername}")
     public ResponseEntity<Map<String, Object>> createChat(@RequestBody Chat chat, @PathVariable String secondInterlocutorUniqueUsername,
                                                           Authentication authentication) {
@@ -84,15 +115,22 @@ public class ChatController {
             response.put("chatsList", chatsList);
 
             return ResponseEntity.ok().body(response);
-        }catch (Exception ex) {
-            ex.printStackTrace();
-            System.err.println(ex.getMessage());
+        } catch (Exception ex) {
+            log.error("Error occurred while creating a chat: {}", ex.getMessage(), ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
+    /**
+     * Retrieves a specific chat based on the chat ID.
+     *
+     * @param model          the model to be populated with data
+     * @param chatId         the ID of the chat to be retrieved
+     * @param authentication the authentication object containing the current user's information
+     * @return the view name for rendering the chat page
+     */
     @GetMapping("/chats/chat={chatId}")
-    public String getChatByChatId(Model model, @PathVariable Long chatId, Authentication authentication){
+    public String getChatByChatId(Model model, @PathVariable Long chatId, Authentication authentication) {
         User currentUser = (User) authentication.getPrincipal();
         List<Chat> chats = currentUser.getChats();
         Chat chat = chatService.findByChatId(chatId);
@@ -106,6 +144,12 @@ public class ChatController {
         return "chat";
     }
 
+    /**
+     * Retrieves the messages for a specific chat.
+     *
+     * @param chatId the ID of the chat
+     * @return a map containing the messages for the chat
+     */
     @GetMapping("/chats/{chatId}/messages")
     @ResponseBody
     public Map<String, Object> getChatMessages(@PathVariable Long chatId) {
@@ -115,9 +159,16 @@ public class ChatController {
         return response;
     }
 
+    /**
+     * Creates a new message in a chat.
+     *
+     * @param message       the message object containing the details of the new message
+     * @param authentication the authentication object containing the current user's information
+     * @return a map containing the updated list of messages and the status of the message creation
+     */
     @PostMapping("/chats/messages")
     @ResponseBody
-    public Map<String, Object> createMessage(@RequestBody Message message, Authentication authentication){
+    public Map<String, Object> createMessage(@RequestBody Message message, Authentication authentication) {
         chatService.updateLastMessageByChatId(message.getChatId(), message.getText());
 
         Map<String, Object> response = new HashMap<>();
@@ -128,7 +179,7 @@ public class ChatController {
         List<Map<String, Object>> messageList = chatService.getChatMessagesMapsList(message.getChatId());
 
         response.put("messages", messageList);
-        response.put("status", statusSaveMessage? 200 : 500);
+        response.put("status", statusSaveMessage ? 200 : 500);
 
         return response;
     }

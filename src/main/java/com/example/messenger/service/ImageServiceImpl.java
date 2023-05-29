@@ -20,6 +20,12 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
+/**
+ * The ImageServiceImpl class implements the {@link ImageService} interface and provides methods for managing user images.
+ *
+ * @version : 1.0
+ * @author : Denis Moskvin
+ */
 @Service
 public class ImageServiceImpl implements ImageService {
 

@@ -12,6 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+/**
+ * @version : 1.0
+ * @author : Denis Moskvin
+ * The ChatServiceImpl class implements the {@link ChatService} interface and provides
+ * methods for managing chat-related operations.
+ */
 @Service
 public class ChatServiceImpl implements ChatService {
 
@@ -48,7 +54,13 @@ public class ChatServiceImpl implements ChatService {
         chat.setMembers(usersList);
         chatRepository.save(chat);
 
-        firstUser.getChats().add(chat);
+        if (firstUser.getChats() != null) {
+            firstUser.getChats().add(chat);
+        }else {
+            List<Chat> chats = new ArrayList<>();
+            chats.add(chat);
+            firstUser.setChats(chats);
+        }
     }
 
     public boolean saveMessage(Message message){
@@ -99,7 +111,7 @@ public class ChatServiceImpl implements ChatService {
             messageMap.put("text", message.getText());
             messageMap.put("senderId", message.getSender().getUserId());
             messageMap.put("senderName", message.getSender().getUsername());
-            messageMap.put("departureTime", message.getTimeByFormat("HH:mm"));
+            messageMap.put("departureTime", message.getMessageTimeBySpecifyFormat("HH:mm"));
             messageMap.put("userAvatarUrl", message.getSender().getAvatarImageUrl());
 
             List<String> subMessages = new ArrayList<>();

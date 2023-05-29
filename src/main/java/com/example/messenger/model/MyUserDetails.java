@@ -3,6 +3,12 @@ package com.example.messenger.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+/**
+ * The user details entity represents a user details in the application.
+ *
+ * @version 1.0
+ * @author Denis Moskvin
+ */
 @Entity
 @Data
 @Table(name = "users_details")

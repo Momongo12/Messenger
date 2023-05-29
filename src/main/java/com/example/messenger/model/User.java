@@ -3,6 +3,7 @@ package com.example.messenger.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -10,13 +11,20 @@ import java.io.File;
 import java.util.*;
 
 
+/**
+ * The User entity represents a user in the application.
+ *
+ * @version 1.0
+ * @author Denis Moskvin
+ */
 @Entity
 @Table(name = "users")
 @Data
+@Log4j2
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long userId;
 
     @Column(name = "username")
@@ -47,9 +55,17 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private MyUserDetails userDetails;
 
-    public User(){
+    /**
+     * Default constructor for the User class.
+     */
+    public User() {
     }
 
+    /**
+     * Retrieves the username of the user.
+     *
+     * @return the username of the user
+     */
     public String getUsername() {
         return username;
     }
@@ -79,73 +95,31 @@ public class User implements UserDetails {
         return getRoles();
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
-
-    public List<Chat> getChats() {
-        return chats;
-    }
-
-    public void setChats(List<Chat> chats) {
-        this.chats = chats;
-    }
-
-    public String getUniqueUsername() {
-        return uniqueUsername;
-    }
-
-    public void setUniqueUsername(String uniqueUsername) {
-        this.uniqueUsername = uniqueUsername;
-    }
-
-    public UserImages getUserImages() {
-        return userImages;
-    }
-
-    public void setUserImages(UserImages userImages) {
-        this.userImages = userImages;
-    }
-
-    public List<Chat> getChatsForUsernamePrefix(String usernamePrefix){
+    /**
+     * Retrieves the list of chats for the given username prefix.
+     *
+     * @param usernamePrefix the prefix of the username
+     * @return the list of chats
+     */
+    public List<Chat> getChatsForUsernamePrefix(String usernamePrefix) {
         List<Chat> chatsForUsernamePrefix = new LinkedList<>();
-        for (Chat chat: chats){
-            if (chat.getMembersNumber() == 2 && chat.getInterLocutorForUser(this).getUniqueUsername().startsWith(usernamePrefix)){
+        for (Chat chat : chats) {
+            if (chat.getMembersNumber() == 2 && chat.getInterlocutorForUser(this).getUniqueUsername().startsWith(usernamePrefix)) {
                 chatsForUsernamePrefix.add(chat);
             }
         }
         return chatsForUsernamePrefix;
     }
 
-    public String getAvatarImageUrl(){
-        if (userImages != null && userImages.getAvatarImageUrl() != null){
+    /**
+     * Retrieves the avatar image URL for the user.
+     *
+     * @return the avatar image URL
+     */
+    public String getAvatarImageUrl() {
+        if (userImages != null && userImages.getAvatarImageUrl() != null) {
             return userImages.getAvatarImageUrl();
-        }else if (userImages == null){
+        } else if (userImages == null) {
             userImages = new UserImages(this);
         }
         if (userImages.getDefaultAvatarImageUrl() == null) {
@@ -158,35 +132,17 @@ public class User implements UserDetails {
         return userImages.getDefaultAvatarImageUrl();
     }
 
-    public String getProfileBgImageUrl() {
-        if (userImages != null && userImages.getProfileBgImageUrl() != null) {
-            return userImages.getProfileBgImageUrl();
-        } else if (userImages == null) {
-            userImages = new UserImages(this);
-        }
-
-        if (userImages.getDefaultProfileBgImageUrl() == null) {
-            File directory = new File("src/main/resources/static/images/defaultImages");
-            int filesNumber = directory.listFiles((dir, name) -> name.startsWith("defaultProfileBg") && name.endsWith(".jpg")).length;
-            int randomFileNumber = new Random().nextInt(filesNumber) + 1;
-            userImages.setDefaultProfileBgImageUrl("/images/defaultImages/" + "defaultProfileBg" + randomFileNumber + ".jpg");
-        }
-
-        return userImages.getDefaultProfileBgImageUrl();
-    }
-
     @Override
     public int hashCode() {
         return Objects.hash(userId);
     }
 
     @Override
-    public boolean equals(Object user){
+    public boolean equals(Object user) {
         if (user instanceof User) {
             return Objects.equals(this.getUserId(), ((User) user).getUserId());
-        }else {
+        } else {
             return false;
         }
     }
-
 }
