@@ -54,7 +54,7 @@ public class RegistrationController {
             return "login";
         }
         if (!userService.createUser(userForm)) {
-            log.error("User service error");
+            log.error("create User error");
             return "login";
         }
 

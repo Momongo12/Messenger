@@ -28,6 +28,9 @@ public class UserServiceImplTest {
     @Mock
     private SessionRegistry sessionRegistry;
 
+    @Mock
+    private ImageService imageService;
+
     @InjectMocks
     private UserServiceImpl userService;
 
@@ -86,6 +89,8 @@ public class UserServiceImplTest {
 
         List<User> users = Arrays.asList(user1, user2);
         when(userRepository.findByUniqueUsernameStartingWith(usernamePrefix)).thenReturn(users);
+        when(imageService.getAvatarImageUrlByUser(user1)).thenReturn(user1.getUserImages().getAvatarImageUrl());
+        when(imageService.getAvatarImageUrlByUser(user2)).thenReturn(user2.getUserImages().getAvatarImageUrl());
 
         // Act
         List<Map<String, Object>> result = userService.getUsersMapsListByUniqueUsernamePrefixWithoutExistChats(usernamePrefix, chats, currentUser);

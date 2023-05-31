@@ -28,6 +28,9 @@ public class ChatServiceImpl implements ChatService {
     private MessageRepository messageRepository;
 
     @Autowired
+    private ImageService imageService;
+
+    @Autowired
     private UserService userService;
 
     public Chat findByChatId(Long chatId) {
@@ -92,7 +95,7 @@ public class ChatServiceImpl implements ChatService {
         for (Chat chat : chats) {
             Map<String, Object> chatMap = new HashMap<>();
             chatMap.put("chatId", chat.getChatId());
-            chatMap.put("chatAvatarImageUrl", chat.getChatAvatarImageUrlForUser(currentUser));
+            chatMap.put("chatAvatarImageUrl", imageService.getAvatarImageUrlByUser(chat.getInterlocutorForUser(currentUser)));
             chatMap.put("chatName", chat.getChatName(currentUser));
             chatMap.put("lastMessage", chat.getLastMessage());
             chatMap.put("interlocutorStatus", userService.isUserOnline(chat.getChatName(currentUser)) ? "online" : "offline");
@@ -112,7 +115,7 @@ public class ChatServiceImpl implements ChatService {
             messageMap.put("senderId", message.getSender().getUserId());
             messageMap.put("senderName", message.getSender().getUsername());
             messageMap.put("departureTime", message.getMessageTimeBySpecifyFormat("HH:mm"));
-            messageMap.put("userAvatarUrl", message.getSender().getAvatarImageUrl());
+            messageMap.put("userAvatarUrl", imageService.getAvatarImageUrlByUser(message.getSender()));
 
             List<String> subMessages = new ArrayList<>();
 

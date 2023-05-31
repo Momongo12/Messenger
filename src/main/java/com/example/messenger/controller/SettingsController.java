@@ -2,6 +2,7 @@ package com.example.messenger.controller;
 
 import com.example.messenger.dto.UserInfoDto;
 import com.example.messenger.model.User;
+import com.example.messenger.service.ImageService;
 import com.example.messenger.service.UserService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ public class SettingsController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ImageService imageService;
+
     /**
      * Handles the GET request for the settings page.
      *
@@ -38,6 +42,7 @@ public class SettingsController {
     public String getSettingsPage(Authentication authentication, Model model) {
         User currentUser = (User) authentication.getPrincipal();
         model.addAttribute("user", currentUser);
+        model.addAttribute("avatarImageUrl", imageService.getAvatarImageUrlByUser(currentUser));
         return "settings";
     }
 

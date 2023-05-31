@@ -4,14 +4,15 @@ package com.example.messenger.service;
 import com.example.messenger.model.User;
 import com.example.messenger.model.UserImages;
 import com.example.messenger.repository.UserImagesRepository;
-import com.example.messenger.service.ImageService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,10 +28,18 @@ import java.util.UUID;
  * @author : Denis Moskvin
  */
 @Service
+@Log4j2
 public class ImageServiceImpl implements ImageService {
 
     @Autowired
     private UserImagesRepository userImagesRepository;
+
+    @Autowired
+    private final ResourceLoader resourceLoader;
+
+    public ImageServiceImpl(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
 
     public String getAvatarImageUrlByUser(User user) {
         UserImages userImages = userImagesRepository.findByUser(user).orElse(new UserImages(user));
@@ -40,14 +49,21 @@ public class ImageServiceImpl implements ImageService {
         }else if (userImages.getDefaultAvatarImageUrl() != null) {
             return userImages.getDefaultAvatarImageUrl();
         }else {
-            File directory = new File("src/main/resources/static/images/defaultImages");
-            int filesNumber = directory.listFiles((dir, name) -> name.startsWith("defaultAvatar") && name.endsWith(".jpg")).length;
-            int randomFileNumber = new Random().nextInt(filesNumber) + 1;
-            String defaultAvatarImageUrl = "/images/defaultImages/" + "defaultAvatar" + randomFileNumber + ".jpg";
-            userImages.setDefaultAvatarImageUrl(defaultAvatarImageUrl);
-            userImagesRepository.save(userImages);
+            try {
+                Resource resource = resourceLoader.getResource("classpath:static/images/defaultImages");
+                File directory = resource.getFile();
+                int filesNumber = directory.listFiles((dir, name) -> name.startsWith("defaultAvatar") && name.endsWith(".jpg")).length;
+                int randomFileNumber = new Random().nextInt(filesNumber) + 1;
+                String defaultAvatarImageUrl = "/images/defaultImages/" + "defaultAvatar" + randomFileNumber + ".jpg";
+                userImages.setDefaultAvatarImageUrl(defaultAvatarImageUrl);
+                userImagesRepository.save(userImages);
 
-            return defaultAvatarImageUrl;
+                return defaultAvatarImageUrl;
+            }catch (IOException e) {
+                log.error(e.getMessage());
+            }
+
+            return null;
         }
     }
 
@@ -59,14 +75,21 @@ public class ImageServiceImpl implements ImageService {
         }else if (userImages.getDefaultProfileBgImageUrl() != null){
             return userImages.getDefaultProfileBgImageUrl();
         }else {
-            File directory = new File("src/main/resources/static/images/defaultImages");
-            int filesNumber = directory.listFiles((dir, name) -> name.startsWith("defaultProfileBg") && name.endsWith(".jpg")).length;
-            int randomFileNumber = new Random().nextInt(filesNumber) + 1;
-            String defaultProfileBgImageUrl = "/images/defaultImages/" + "defaultProfileBg" + randomFileNumber + ".jpg";
-            userImages.setDefaultProfileBgImageUrl(defaultProfileBgImageUrl);
-            userImagesRepository.save(userImages);
+            try {
+                Resource resource = resourceLoader.getResource("classpath:static/images/defaultImages");
+                File directory = resource.getFile();
+                int filesNumber = directory.listFiles((dir, name) -> name.startsWith("defaultProfileBg") && name.endsWith(".jpg")).length;
+                int randomFileNumber = new Random().nextInt(filesNumber) + 1;
+                String defaultProfileBgImageUrl = "/images/defaultImages/" + "defaultProfileBg" + randomFileNumber + ".jpg";
+                userImages.setDefaultProfileBgImageUrl(defaultProfileBgImageUrl);
+                userImagesRepository.save(userImages);
 
-            return defaultProfileBgImageUrl;
+                return defaultProfileBgImageUrl;
+            } catch (IOException e) {
+                log.error(e.getMessage());
+            }
+
+            return null;
         }
     }
 
@@ -118,8 +141,7 @@ public class ImageServiceImpl implements ImageService {
         try {
             deleteImageFromFolder(imageName);
         }catch (IOException e){
-            e.printStackTrace();
-            System.out.println(e.getMessage());
+            log.error(e.getMessage());
         }
 
         userImagesRepository.deleteAvatarImageUrlByUserId(user.getUserId());
@@ -134,12 +156,15 @@ public class ImageServiceImpl implements ImageService {
         try {
             deleteImageFromFolder(imageName);
         }catch (IOException e){
-            e.printStackTrace();
-            System.out.println(e.getMessage());
+            log.error(e.getMessage());
         }
 
         userImagesRepository.deleteBgImageUrlByUserId(user.getUserId());
         user.getUserImages().setProfileBgImageUrl(null);
+    }
+
+    public InputStream getUserImage(String imageName) throws IOException {
+        return new FileInputStream("/data/images/" + imageName);
     }
 
     private String saveImageToFolder(MultipartFile image) throws IOException {
@@ -149,14 +174,14 @@ public class ImageServiceImpl implements ImageService {
         }else {
             imageName = UUID.randomUUID() + ".png";
         }
-        Path imagePath = Paths.get("target/classes/static/images/" + imageName);
+        Path imagePath = Paths.get("/data/images/" + imageName);
         Files.copy(image.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
 
-        return "/images/" + imageName;
+        return "/data/images/" + imageName;
     }
 
     private void deleteImageFromFolder(String imageName) throws IOException {
-        Path imagePath = Paths.get("target/classes/static/images/" + imageName);
+        Path imagePath = Paths.get("/data/images/" + imageName);
         Files.delete(imagePath);
     }
 }

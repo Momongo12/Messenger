@@ -26,7 +26,7 @@ public class SecurityConfiguration{
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .requestMatchers( "/registration","/home/**","/css/**", "/", "/resources/**", "/images/**").permitAll()
+                .requestMatchers( "/registration","/home/**","/css/**", "/", "/resources/**", "/images/**", "/data/**").permitAll()
                 .requestMatchers("/chats", "/home").hasRole("USER")
                 .anyRequest().authenticated()
                 .and()

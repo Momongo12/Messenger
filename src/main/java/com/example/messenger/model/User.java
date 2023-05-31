@@ -4,6 +4,7 @@ package com.example.messenger.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.core.io.Resource;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -109,27 +110,6 @@ public class User implements UserDetails {
             }
         }
         return chatsForUsernamePrefix;
-    }
-
-    /**
-     * Retrieves the avatar image URL for the user.
-     *
-     * @return the avatar image URL
-     */
-    public String getAvatarImageUrl() {
-        if (userImages != null && userImages.getAvatarImageUrl() != null) {
-            return userImages.getAvatarImageUrl();
-        } else if (userImages == null) {
-            userImages = new UserImages(this);
-        }
-        if (userImages.getDefaultAvatarImageUrl() == null) {
-            File directory = new File("src/main/resources/static/images/defaultImages");
-            int filesNumber = directory.listFiles((dir, name) -> name.startsWith("defaultAvatar") && name.endsWith(".jpg")).length;
-            int randomFileNumber = new Random().nextInt(filesNumber) + 1;
-            userImages.setDefaultAvatarImageUrl("/images/defaultImages/" + "defaultAvatar" + randomFileNumber + ".jpg");
-        }
-
-        return userImages.getDefaultAvatarImageUrl();
     }
 
     @Override

@@ -276,6 +276,7 @@ body {
 }
 
 .user-details-text-input{
+    align-self: center;
     border: none;
     border-bottom: 1px solid #ccc;
     font-size: 0.8rem;

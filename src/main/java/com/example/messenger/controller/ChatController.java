@@ -5,6 +5,7 @@ import com.example.messenger.model.Chat;
 import com.example.messenger.model.Message;
 import com.example.messenger.model.User;
 import com.example.messenger.service.ChatService;
+import com.example.messenger.service.ImageService;
 import com.example.messenger.service.SmileysService;
 import com.example.messenger.service.UserService;
 import lombok.extern.log4j.Log4j2;
@@ -38,6 +39,9 @@ public class ChatController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ImageService imageService;
+
     /**
      * Retrieves the list of chats for the authenticated user.
      *
@@ -48,9 +52,8 @@ public class ChatController {
     @GetMapping("/chats")
     public String getChats(Model model, Authentication authentication) {
         User user = userService.findUserByUserId(((User) authentication.getPrincipal()).getUserId());
-        List<Chat> chats = user.getChats();
 
-        model.addAttribute("chats", chats);
+        model.addAttribute("chats", getChatsMapsListByUser(user));
         model.addAttribute("currentUser", authentication.getPrincipal());
         model.addAttribute("smileysCategoriesList", smileysService.getSmileysCategoriesList());
         model.addAttribute("displayInputField", false);
@@ -82,7 +85,7 @@ public class ChatController {
 
         Hibernate.initialize(chat);
 
-        model.addAttribute("chats", chats);
+        model.addAttribute("chats", getChatsMapsListByUser(currentUser));
         model.addAttribute("currentUser", authentication.getPrincipal());
         model.addAttribute("chatName", chat.getChatName(currentUser));
         model.addAttribute("messages", chatService.getChatMessagesMapsList(chat.getChatId()));
@@ -90,6 +93,25 @@ public class ChatController {
         model.addAttribute("displayInputField", true);
 
         return "chat";
+    }
+
+    private List<Map<String, Object>> getChatsMapsListByUser(User user) {
+        List<Chat> chats = user.getChats();
+
+        List<Map<String, Object>> chatsMapsList = new ArrayList<>();
+
+        for (Chat chat: chats) {
+            Map<String, Object> chatMap = new HashMap<>();
+
+            chatMap.put("chatId", chat.getChatId());
+            chatMap.put("chatName", chat.getChatName(user));
+            chatMap.put("lastMessage", chat.getLastMessage());
+            chatMap.put("chatAvatarImageUrl", imageService.getAvatarImageUrlByUser(chat.getInterlocutorForUser(user)));
+
+            chatsMapsList.add(chatMap);
+        }
+
+        return chatsMapsList;
     }
 
     /**
@@ -132,10 +154,9 @@ public class ChatController {
     @GetMapping("/chats/chat={chatId}")
     public String getChatByChatId(Model model, @PathVariable Long chatId, Authentication authentication) {
         User currentUser = (User) authentication.getPrincipal();
-        List<Chat> chats = currentUser.getChats();
         Chat chat = chatService.findByChatId(chatId);
 
-        model.addAttribute("chats", chats);
+        model.addAttribute("chats", getChatsMapsListByUser(currentUser));
         model.addAttribute("currentUser", authentication.getPrincipal());
         model.addAttribute("messages", chatService.getChatMessagesMapsList(chat.getChatId()));
         model.addAttribute("smileysCategoriesList", smileysService.getSmileysCategoriesList());

@@ -3,7 +3,9 @@ package com.example.messenger.service;
 import com.example.messenger.model.User;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * The ImageService interface provides methods for managing user images.
@@ -62,4 +64,6 @@ public interface ImageService {
      * @param user The User object.
      */
     void deleteBgImageByUserId(User user);
+
+    InputStream getUserImage(String imageName) throws IOException;
 }

@@ -1,7 +1,9 @@
 package com.example.messenger.model;
 
+import com.example.messenger.service.ImageService;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Date;
 import java.util.List;
@@ -89,21 +91,6 @@ public class Chat {
         for (User member : members) {
             if (!member.equals(currentUser)) {
                 return member;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Retrieves the chat avatar image URL for the current user.
-     *
-     * @param currentUser the current user
-     * @return the chat avatar image URL
-     */
-    public String getChatAvatarImageUrlForUser(User currentUser) {
-        for (User member : members) {
-            if (!member.equals(currentUser)) {
-                return member.getAvatarImageUrl();
             }
         }
         return null;

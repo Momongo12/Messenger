@@ -31,6 +31,9 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Autowired
+    private ImageService imageService;
+
+    @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
@@ -87,7 +90,7 @@ public class UserServiceImpl implements UserService {
                 userMap.put("chatId", 0);
                 userMap.put("username", user.getUsername());
                 userMap.put("uniqueUsername", user.getUniqueUsername());
-                userMap.put("chatAvatarImageUrl", user.getAvatarImageUrl());
+                userMap.put("chatAvatarImageUrl", imageService.getAvatarImageUrlByUser(user));
                 usersList.add(userMap);
             }
         }

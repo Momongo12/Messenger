@@ -148,7 +148,7 @@ public class HomePageController {
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(currentUser.getAvatarImageUrl());
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(imageService.getAvatarImageUrlByUser(currentUser));
     }
 }
 
