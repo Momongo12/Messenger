@@ -39,8 +39,7 @@ public class UserController {
         Map<String, Object> response = new HashMap<>();
         User currentUser = userService.findUserByUserId(((User) authentication.getPrincipal()).getUserId());
 
-        List<Chat> chats = currentUser.getChats();
-        List<Map<String, Object>> chatsList = chatService.convertChatsListToChatsMapList(chats, currentUser);
+        List<Map<String, Object>> chatsList = chatService.convertChatsListToChatsMapList(currentUser.getChats(), currentUser);
         response.put("chatsList", chatsList);
 
         return response;

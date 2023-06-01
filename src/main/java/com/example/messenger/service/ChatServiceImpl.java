@@ -89,16 +89,16 @@ public class ChatServiceImpl implements ChatService {
         }
     }
 
-    public List<Map<String, Object>> convertChatsListToChatsMapList(List<Chat> chats, User currentUser) {
+    public List<Map<String, Object>> convertChatsListToChatsMapList(List<Chat> chats, User user) {
         List<Map<String, Object>> chatsList = new ArrayList<>();
 
         for (Chat chat : chats) {
             Map<String, Object> chatMap = new HashMap<>();
             chatMap.put("chatId", chat.getChatId());
-            chatMap.put("chatAvatarImageUrl", imageService.getAvatarImageUrlByUser(chat.getInterlocutorForUser(currentUser)));
-            chatMap.put("chatName", chat.getChatName(currentUser));
+            chatMap.put("chatAvatarImageUrl", imageService.getAvatarImageUrlByUser(chat.getInterlocutorForUser(user)));
+            chatMap.put("chatName", chat.getChatName(user));
             chatMap.put("lastMessage", chat.getLastMessage());
-            chatMap.put("interlocutorStatus", userService.isUserOnline(chat.getChatName(currentUser)) ? "online" : "offline");
+            chatMap.put("interlocutorStatus", userService.isUserOnline(chat.getChatName(user)) ? "online" : "offline");
 
             chatsList.add(chatMap);
         }

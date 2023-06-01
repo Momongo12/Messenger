@@ -60,10 +60,10 @@ public interface ChatService {
      * Converts a list of Chat objects to a list of maps representing the chats.
      *
      * @param chats      The list of Chat objects.
-     * @param currentUser The current user accessing the chats.
+     * @param user The current user accessing the chats.
      * @return The list of maps representing the chats.
      */
-    List<Map<String, Object>> convertChatsListToChatsMapList(List<Chat> chats, User currentUser);
+    List<Map<String, Object>> convertChatsListToChatsMapList(List<Chat> chats, User user);
 
     /**
      * Retrieves the messages of a chat as a list of maps.

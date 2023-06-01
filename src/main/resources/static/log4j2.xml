@@ -5,14 +5,14 @@
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n" />
         </Console>
 
-        <File name="FileAppender" fileName="${sys:user.dir}/logs/messenger.log" append="false">
+        <File name="FileAppender" fileName="/logs/messenger.log" append="false">
             <PatternLayout pattern="%d{HH:mm:ss} %p %c{1.} [%thread] %msg%n" />
         </File>
     </Appenders>
 
     <Loggers>
-        <Root level="debug">
-            <AppenderRef ref="FileAppender" />
+        <Root level="info">
+            <AppenderRef ref="Console" />
         </Root>
     </Loggers>
 </Configuration>

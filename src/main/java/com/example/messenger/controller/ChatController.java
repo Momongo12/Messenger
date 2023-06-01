@@ -51,9 +51,9 @@ public class ChatController {
      */
     @GetMapping("/chats")
     public String getChats(Model model, Authentication authentication) {
-        User user = userService.findUserByUserId(((User) authentication.getPrincipal()).getUserId());
+        User currentUser = userService.findUserByUserId(((User) authentication.getPrincipal()).getUserId());
 
-        model.addAttribute("chats", getChatsMapsListByUser(user));
+        model.addAttribute("chats", chatService.convertChatsListToChatsMapList(currentUser.getChats(), currentUser));
         model.addAttribute("currentUser", authentication.getPrincipal());
         model.addAttribute("smileysCategoriesList", smileysService.getSmileysCategoriesList());
         model.addAttribute("displayInputField", false);
@@ -86,7 +86,7 @@ public class ChatController {
 
         Hibernate.initialize(chat);
 
-        model.addAttribute("chats", getChatsMapsListByUser(currentUser));
+        model.addAttribute("chats", chatService.convertChatsListToChatsMapList(currentUser.getChats(), currentUser));
         model.addAttribute("currentUser", authentication.getPrincipal());
         model.addAttribute("chatName", chat.getChatName(currentUser));
         model.addAttribute("chatId", chat.getChatId());
@@ -158,7 +158,7 @@ public class ChatController {
         User currentUser = (User) authentication.getPrincipal();
         Chat chat = chatService.findByChatId(chatId);
 
-        model.addAttribute("chats", getChatsMapsListByUser(currentUser));
+        model.addAttribute("chats", chatService.convertChatsListToChatsMapList(currentUser.getChats(), currentUser));
         model.addAttribute("currentUser", authentication.getPrincipal());
         model.addAttribute("chatId", chatId);
         model.addAttribute("messages", chatService.getChatMessagesMapsList(chat.getChatId()));

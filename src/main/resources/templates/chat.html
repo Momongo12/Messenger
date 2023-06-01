@@ -38,7 +38,9 @@
 
       <div id="chat-list">
         <div th:each="chat : ${chats}" class="chat-list discussion message-active" th:data-chat-id="${chat.chatId}">
-          <div class="photo" th:style="'background-image: url(' + ${chat.chatAvatarImageUrl} + ');'"></div>
+          <div class="photo" th:style="'background-image: url(' + ${chat.chatAvatarImageUrl} + ');'">
+            <div th:class="${chat.interlocutorStatus}"></div>
+          </div>
           <div class="desc-contact">
             <p class="name" th:text="${chat.chatName}"></p>
             <p class="message unique-username" th:text="${chat.lastMessage}"></p>
