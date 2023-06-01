@@ -36,16 +36,23 @@ public class ImageServiceImpl implements ImageService {
 
     @Autowired
     private final ResourceLoader resourceLoader;
+    private static String pathToImagesFolder;
 
     public ImageServiceImpl(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
+
+        if (System.getenv("PATH_TO_IMAGES_FOLDER") != null) {
+            pathToImagesFolder = System.getenv("PATH_TO_IMAGES_FOLDER");
+        }else {
+            pathToImagesFolder = "data/images/";
+        }
     }
 
     public String getAvatarImageUrlByUser(User user) {
         UserImages userImages = userImagesRepository.findByUser(user).orElse(new UserImages(user));
 
-        if (userImages.getAvatarImageUrl() != null){
-            return userImages.getAvatarImageUrl();
+        if (userImages.getAvatarImageName() != null){
+            return "/data/images/" + userImages.getAvatarImageName();
         }else if (userImages.getDefaultAvatarImageUrl() != null) {
             return userImages.getDefaultAvatarImageUrl();
         }else {
@@ -70,8 +77,8 @@ public class ImageServiceImpl implements ImageService {
     public String getProfileBgImageUrlByUser(User user){
         UserImages userImages = userImagesRepository.findByUser(user).orElse(new UserImages(user));
 
-        if (userImages.getProfileBgImageUrl() != null){
-            return userImages.getProfileBgImageUrl();
+        if (userImages.getProfileBgImageName() != null){
+            return "/data/images/" + userImages.getProfileBgImageName();
         }else if (userImages.getDefaultProfileBgImageUrl() != null){
             return userImages.getDefaultProfileBgImageUrl();
         }else {
@@ -95,22 +102,22 @@ public class ImageServiceImpl implements ImageService {
 
     public String updateUserAvatarImageUrlByUser(User user, MultipartFile image) throws IOException {
         Optional<UserImages> userImagesOptional = userImagesRepository.findByUser(user);
-        String imageUrl = saveImageToFolder(image);
+        String imageName = saveImageToFolder(image);
         UserImages userImages;
 
         if (userImagesOptional.isPresent()){
             userImages = userImagesOptional.get();
-            userImages.setAvatarImageUrl(imageUrl);
+            userImages.setAvatarImageName(imageName);
         }else {
             userImages = new UserImages();
             userImages.setUser(user);
-            userImages.setAvatarImageUrl(imageUrl);
+            userImages.setAvatarImageName(imageName);
         }
 
         user.setUserImages(userImages);
         userImagesRepository.save(userImages);
 
-        return imageUrl;
+        return pathToImagesFolder + imageName;
     }
 
     public String updateUserBgImageUrlByUser(User user, MultipartFile image) throws IOException {
@@ -120,22 +127,22 @@ public class ImageServiceImpl implements ImageService {
 
         if (userImagesOptional.isPresent()){
             userImages = userImagesOptional.get();
-            userImages.setProfileBgImageUrl(imageUrl);
+            userImages.setProfileBgImageName(imageUrl);
         }else {
             userImages = new UserImages();
             userImages.setUser(user);
-            userImages.setProfileBgImageUrl(imageUrl);
+            userImages.setProfileBgImageName(imageUrl);
         }
 
         user.setUserImages(userImages);
         userImagesRepository.save(userImages);
 
-        return imageUrl;
+        return pathToImagesFolder + imageUrl;
     }
 
 
     public void deleteAvatarImageByUser(User user) {
-        String imageUrl = user.getUserImages().getAvatarImageUrl();
+        String imageUrl = user.getUserImages().getAvatarImageName();
         String imageName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
 
         try {
@@ -144,13 +151,13 @@ public class ImageServiceImpl implements ImageService {
             log.error(e.getMessage());
         }
 
-        userImagesRepository.deleteAvatarImageUrlByUserId(user.getUserId());
-        user.getUserImages().setAvatarImageUrl(null);
+        userImagesRepository.deleteAvatarImageNameByUserId(user.getUserId());
+        user.getUserImages().setAvatarImageName(null);
     }
 
 
     public void deleteBgImageByUserId(User user) {
-        String imageUrl = user.getUserImages().getProfileBgImageUrl();
+        String imageUrl = user.getUserImages().getProfileBgImageName();
         String imageName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
 
         try {
@@ -159,12 +166,12 @@ public class ImageServiceImpl implements ImageService {
             log.error(e.getMessage());
         }
 
-        userImagesRepository.deleteBgImageUrlByUserId(user.getUserId());
-        user.getUserImages().setProfileBgImageUrl(null);
+        userImagesRepository.deleteBgImageNameByUserId(user.getUserId());
+        user.getUserImages().setProfileBgImageName(null);
     }
 
     public InputStream getUserImage(String imageName) throws IOException {
-        return new FileInputStream("/data/images/" + imageName);
+        return new FileInputStream(pathToImagesFolder + imageName);
     }
 
     private String saveImageToFolder(MultipartFile image) throws IOException {
@@ -174,14 +181,14 @@ public class ImageServiceImpl implements ImageService {
         }else {
             imageName = UUID.randomUUID() + ".png";
         }
-        Path imagePath = Paths.get("/data/images/" + imageName);
+        Path imagePath = Paths.get(pathToImagesFolder + imageName);
         Files.copy(image.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
 
-        return "/data/images/" + imageName;
+        return imageName;
     }
 
     private void deleteImageFromFolder(String imageName) throws IOException {
-        Path imagePath = Paths.get("/data/images/" + imageName);
+        Path imagePath = Paths.get(pathToImagesFolder + imageName);
         Files.delete(imagePath);
     }
 }

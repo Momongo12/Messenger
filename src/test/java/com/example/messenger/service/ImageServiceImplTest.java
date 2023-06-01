@@ -76,7 +76,7 @@ public class ImageServiceImplTest {
 //        User user = new User();
 //        user.setUserId(1L);
 //        UserImages userImages = new UserImages(user);
-//        userImages.setProfileBgImageUrl("profileBgImageUrl.jpg");
+//        userImages.setProfileBgImageName("profileBgImageUrl.jpg");
 //        when(userImagesRepository.findByUser(user)).thenReturn(Optional.of(userImages));
 //
 //        String imageUrl = imageService.getProfileBgImageUrlByUser(user);
@@ -155,7 +155,7 @@ public class ImageServiceImplTest {
 //        String expectedImageUrl = "/images/image.jpg";
 //        UserImages existingUserImages = new UserImages();
 //        existingUserImages.setUser(user);
-//        existingUserImages.setProfileBgImageUrl("/images/old_image.jpg");
+//        existingUserImages.setProfileBgImageName("/images/old_image.jpg");
 //        Optional<UserImages> userImagesOptional = Optional.of(existingUserImages);
 //        when(userImagesRepository.findByUser(user)).thenReturn(userImagesOptional);
 //
@@ -165,7 +165,7 @@ public class ImageServiceImplTest {
 //        verify(userImagesRepository).save(userImagesCaptor.capture());
 //        UserImages savedUserImages = userImagesCaptor.getValue();
 //        assertEquals(user, savedUserImages.getUser());
-//        assertEquals(expectedImageUrl, savedUserImages.getProfileBgImageUrl());
+//        assertEquals(expectedImageUrl, savedUserImages.getProfileBgImageName());
 //    }
 //
 //    @Test
@@ -182,7 +182,7 @@ public class ImageServiceImplTest {
 //        verify(userImagesRepository).save(userImagesCaptor.capture());
 //        UserImages savedUserImages = userImagesCaptor.getValue();
 //        assertEquals(user, savedUserImages.getUser());
-//        assertEquals(expectedImageUrl, savedUserImages.getProfileBgImageUrl());
+//        assertEquals(expectedImageUrl, savedUserImages.getProfileBgImageName());
 //    }
 
 //    @Test
@@ -204,13 +204,13 @@ public class ImageServiceImplTest {
 //        User user = new User();
 //        user.setUserId(1L);
 //        UserImages userImages = new UserImages(user);
-//        userImages.setProfileBgImageUrl("/images/bgimage.jpg");
+//        userImages.setProfileBgImageName("/images/bgimage.jpg");
 //        user.setUserImages(userImages);
 //        doNothing().when(imageService).deleteImageFromFolder(anyString());
 //
 //        imageService.deleteBgImageByUserId(user);
 //
 //        verify(userImagesRepository).deleteBgImageUrlByUserId(user.getUserId());
-//        assertNull(user.getUserImages().getProfileBgImageUrl());
+//        assertNull(user.getUserImages().getProfileBgImageName());
 //    }
 }

@@ -17,10 +17,10 @@ public interface UserImagesRepository extends JpaRepository<UserImages, Long> {
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE user_images SET avatar_image_url=null WHERE user_id=:userId", nativeQuery = true)
-    int deleteAvatarImageUrlByUserId(@Param("userId") Long userId);
+    @Query(value = "UPDATE user_images SET avatar_image_name=null WHERE user_id=:userId", nativeQuery = true)
+    int deleteAvatarImageNameByUserId(@Param("userId") Long userId);
 
     @Modifying
-    @Query(value = "UPDATE user_images SET profile_bg_image_url=null WHERE user_id=:userId", nativeQuery = true)
-    int deleteBgImageUrlByUserId(@Param("userId") Long userId);
+    @Query(value = "UPDATE user_images SET profile_bg_image_name=null WHERE user_id=:userId", nativeQuery = true)
+    int deleteBgImageNameByUserId(@Param("userId") Long userId);
 }

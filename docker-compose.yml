@@ -26,6 +26,7 @@ services:
       DB_NAME: messenger
       DB_USER: postgres
       DB_PASSWORD: postgres
+      PATH_TO_IMAGES_FOLDER: /data/images/
     volumes:
       - E:\messenger_spring_boot\data\images:/data/images
 

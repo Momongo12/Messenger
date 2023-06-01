@@ -53,7 +53,7 @@
         <p id="chat-title" class="name" th:text="${chatName}"></p>
         <i class="icon clickable fa fa-ellipsis-h right" aria-hidden="true"></i>
       </div>
-      <div id="messages-chat" class="messages-chat">
+      <div id="messages-chat" class="messages-chat" th:data-chat-id="${chatId}">
         <div th:if="${messages != null}" th:each="message : ${messages}"
              th:classappend="message">
           <div class="photo" th:style="'background-image: url(' + ${message.userAvatarUrl} + ')'"></div>

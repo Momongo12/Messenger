@@ -59,6 +59,7 @@ public class SettingsController {
             userService.updateUserDetails(userInfoDto, (User) authentication.getPrincipal());
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
+            log.error(e.getStackTrace());
             log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
         }

@@ -74,7 +74,7 @@ public class UserServiceImplTest {
         user1.setUsername("test1");
         user1.setUniqueUsername("unique1");
         user1.setUserImages(new UserImages());
-        user1.getUserImages().setAvatarImageUrl("avatar1.jpg");
+        user1.getUserImages().setAvatarImageName("avatar1.jpg");
         user1.setUserDetails(new MyUserDetails());
         user1.getUserDetails().setPublicProfileFlag(true);
 
@@ -83,14 +83,14 @@ public class UserServiceImplTest {
         user2.setUsername("test2");
         user2.setUniqueUsername("unique2");
         user2.setUserImages(new UserImages());
-        user2.getUserImages().setAvatarImageUrl("avatar2.jpg");
+        user2.getUserImages().setAvatarImageName("avatar2.jpg");
         user2.setUserDetails(new MyUserDetails());
         user2.getUserDetails().setPublicProfileFlag(true);
 
         List<User> users = Arrays.asList(user1, user2);
         when(userRepository.findByUniqueUsernameStartingWith(usernamePrefix)).thenReturn(users);
-        when(imageService.getAvatarImageUrlByUser(user1)).thenReturn(user1.getUserImages().getAvatarImageUrl());
-        when(imageService.getAvatarImageUrlByUser(user2)).thenReturn(user2.getUserImages().getAvatarImageUrl());
+        when(imageService.getAvatarImageUrlByUser(user1)).thenReturn(user1.getUserImages().getAvatarImageName());
+        when(imageService.getAvatarImageUrlByUser(user2)).thenReturn(user2.getUserImages().getAvatarImageName());
 
         // Act
         List<Map<String, Object>> result = userService.getUsersMapsListByUniqueUsernamePrefixWithoutExistChats(usernamePrefix, chats, currentUser);

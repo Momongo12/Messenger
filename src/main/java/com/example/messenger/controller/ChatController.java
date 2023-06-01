@@ -57,6 +57,7 @@ public class ChatController {
         model.addAttribute("currentUser", authentication.getPrincipal());
         model.addAttribute("smileysCategoriesList", smileysService.getSmileysCategoriesList());
         model.addAttribute("displayInputField", false);
+        model.addAttribute("chatId", null);
 
         return "chat";
     }
@@ -88,6 +89,7 @@ public class ChatController {
         model.addAttribute("chats", getChatsMapsListByUser(currentUser));
         model.addAttribute("currentUser", authentication.getPrincipal());
         model.addAttribute("chatName", chat.getChatName(currentUser));
+        model.addAttribute("chatId", chat.getChatId());
         model.addAttribute("messages", chatService.getChatMessagesMapsList(chat.getChatId()));
         model.addAttribute("smileysCategoriesList", smileysService.getSmileysCategoriesList());
         model.addAttribute("displayInputField", true);
@@ -158,6 +160,7 @@ public class ChatController {
 
         model.addAttribute("chats", getChatsMapsListByUser(currentUser));
         model.addAttribute("currentUser", authentication.getPrincipal());
+        model.addAttribute("chatId", chatId);
         model.addAttribute("messages", chatService.getChatMessagesMapsList(chat.getChatId()));
         model.addAttribute("smileysCategoriesList", smileysService.getSmileysCategoriesList());
         model.addAttribute("displayInputField", true);

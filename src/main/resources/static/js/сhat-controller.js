@@ -133,6 +133,10 @@ sendMessageButton.addEventListener('click', event => {
 
     if (!createChatFlag) return;
 
+    if (chatId === null) {
+        chatId =  document.getElementById('messages-chat').dataset.chatId;
+    }
+
     const data = {
         chatId: chatId,
         text: messageInput.value,

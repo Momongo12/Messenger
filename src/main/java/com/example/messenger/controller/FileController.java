@@ -3,6 +3,7 @@ package com.example.messenger.controller;
 
 import com.example.messenger.service.ImageService;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @Controller
+@Log4j2
 public class FileController {
 
     @Autowired
@@ -21,9 +23,12 @@ public class FileController {
 
     @GetMapping(value = "data/images/{imageName}")
     public void downloadImage(@PathVariable("imageName") String imageName,
-                              HttpServletResponse response) throws IOException {
-        InputStream resource = imageService.getUserImage(imageName);
-        response.setContentType(MediaType.IMAGE_JPEG_VALUE);
-        StreamUtils.copy(resource, response.getOutputStream());
+                              HttpServletResponse response){
+        try (InputStream resource = imageService.getUserImage(imageName)) {
+            response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+            StreamUtils.copy(resource, response.getOutputStream());
+        }catch (Exception e) {
+            log.error(e.getMessage());
+        }
     }
 }

@@ -86,7 +86,6 @@ imageInput.addEventListener('change', async (event) => {
     try {
         const response = await axios.post('/image/upload?typeImage=' + typeOfUploadedOrDeletedImage, formData);
         const src = response.data;
-        console.log(typeOfUploadedOrDeletedImage);
         if (typeOfUploadedOrDeletedImage === 'avatar'){
             userAvatarImg.setAttribute('src', src);
         }else if (typeOfUploadedOrDeletedImage === 'profileBgImage'){
