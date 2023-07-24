@@ -1,7 +1,8 @@
-package com.example.messenger.service;
+package com.example.messenger.service.impl;
 
 import com.example.messenger.model.Smileys;
 import com.example.messenger.model.SmileysCategory;
+import com.example.messenger.service.SmileysService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -6,6 +6,7 @@ import com.example.messenger.model.MyUserDetails;
 import com.example.messenger.model.User;
 import com.example.messenger.model.UserImages;
 import com.example.messenger.repository.UserRepository;
+import com.example.messenger.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

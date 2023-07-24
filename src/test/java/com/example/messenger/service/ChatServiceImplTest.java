@@ -6,6 +6,8 @@ import com.example.messenger.model.User;
 import com.example.messenger.repository.ChatRepository;
 import com.example.messenger.repository.MessageRepository;
 import static org.junit.jupiter.api.Assertions.*;
+
+import com.example.messenger.service.impl.ChatServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;

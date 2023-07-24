@@ -1,10 +1,13 @@
-package com.example.messenger.service;
+package com.example.messenger.service.impl;
 
 import com.example.messenger.model.Chat;
 import com.example.messenger.model.Message;
 import com.example.messenger.model.User;
 import com.example.messenger.repository.ChatRepository;
 import com.example.messenger.repository.MessageRepository;
+import com.example.messenger.service.ChatService;
+import com.example.messenger.service.ImageService;
+import com.example.messenger.service.UserService;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

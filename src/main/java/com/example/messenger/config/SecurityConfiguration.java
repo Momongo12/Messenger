@@ -1,7 +1,7 @@
 package com.example.messenger.config;
 
 
-import com.example.messenger.service.UserServiceImpl;
+import com.example.messenger.service.impl.UserServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;

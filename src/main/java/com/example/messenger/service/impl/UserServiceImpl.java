@@ -1,4 +1,4 @@
-package com.example.messenger.service;
+package com.example.messenger.service.impl;
 
 
 import com.example.messenger.dto.UserInfoDto;
@@ -7,6 +7,8 @@ import com.example.messenger.model.MyUserDetails;
 import com.example.messenger.model.Role;
 import com.example.messenger.model.User;
 import com.example.messenger.repository.UserRepository;
+import com.example.messenger.service.ImageService;
+import com.example.messenger.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
@@ -99,16 +101,18 @@ public class UserServiceImpl implements UserService {
     }
 
     public void updateUserDetails(UserInfoDto userInfoDto, User user) throws IllegalArgumentException{
-        User userWithNewUniqueUsername = userRepository.findByUniqueUsername(userInfoDto.getUniqueUsername());
-
-        if (userWithNewUniqueUsername != null && !user.equals(userWithNewUniqueUsername)) {
-            throw new IllegalArgumentException();
-        }else {
-            user.setUniqueUsername(userInfoDto.getUniqueUsername());
-        }
 
         if (userInfoDto.getUsername() != null) {
             user.setUsername(userInfoDto.getUsername());
+        }
+        if (userInfoDto.getUniqueUsername() != null) {
+            User userWithNewUniqueUsername = userRepository.findByUniqueUsername(userInfoDto.getUniqueUsername());
+
+            if (userWithNewUniqueUsername != null && !user.equals(userWithNewUniqueUsername)) {
+                throw new IllegalArgumentException();
+            }else {
+                user.setUniqueUsername(userInfoDto.getUniqueUsername());
+            }
         }
         if (userInfoDto.getUserDescription() != null) {
             user.getUserDetails().setShortInfo(userInfoDto.getUserDescription());
@@ -119,9 +123,12 @@ public class UserServiceImpl implements UserService {
         if (userInfoDto.getPhoneNumber() != null) {
             user.getUserDetails().setPhoneNumber(userInfoDto.getPhoneNumber());
         }
-
-        user.getUserDetails().setPublicProfileFlag(userInfoDto.getIsPublicProfile());
-        user.getUserDetails().setShowingEmailFlag(userInfoDto.getIsShowingEmail());
+        if (userInfoDto.getIsPublicProfile() != null) {
+            user.getUserDetails().setPublicProfileFlag(userInfoDto.getIsPublicProfile());
+        }
+        if (userInfoDto.getIsShowingEmail() != null) {
+            user.getUserDetails().setShowingEmailFlag(userInfoDto.getIsShowingEmail());
+        }
 
         userRepository.save(user);
     }
