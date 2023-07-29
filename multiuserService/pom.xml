@@ -11,8 +11,8 @@
 	<groupId>org.example</groupId>
 	<artifactId>multiuserService</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>multiuserService</name>
-	<description>multiuserService</description>
+	<name>MultiuserService</name>
+	<description>MultiuserService</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
@@ -24,6 +24,21 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-reactor-netty</artifactId>
+			<version>3.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-messaging</artifactId>
+			<version>6.0.11</version>
+		</dependency>
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>4.3.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
