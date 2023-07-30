@@ -4,3 +4,6 @@ spring:
     username: guest
     password: guest
     port: 61613
+
+server:
+  port: 9090
