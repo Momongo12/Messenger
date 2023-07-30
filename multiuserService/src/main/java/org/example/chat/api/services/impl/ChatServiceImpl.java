@@ -6,14 +6,16 @@ import lombok.extern.log4j.Log4j2;
 import org.example.chat.api.controllers.ws.ChatWsController;
 import org.example.chat.api.mappers.ChatMapper;
 import org.example.chat.api.model.Chat;
-import org.example.chat.api.model.Participant;
 import org.example.chat.api.services.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.SetOperations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 
 @Log4j2
@@ -48,7 +50,10 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<Chat> getChats() {
-        return null;
+    public Stream<Chat> getChats() {
+        return Optional
+                .ofNullable(setOperations.members(KEY))
+                .orElseGet(HashSet::new)
+                .stream();
     }
 }
