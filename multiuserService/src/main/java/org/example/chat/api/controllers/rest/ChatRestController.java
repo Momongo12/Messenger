@@ -4,7 +4,6 @@ import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import org.example.chat.api.mappers.ChatMapper;
-import org.example.chat.api.model.Chat;
 import org.example.chat.api.model.dtos.ChatDto;
 import org.example.chat.api.services.ChatService;
 import org.springframework.web.bind.annotation.*;

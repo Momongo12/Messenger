@@ -1,5 +1,7 @@
 // import axios from 'axios';
 
+// import { Client } from '@stomp/stompjs';
+
 const xhr = new XMLHttpRequest();
 const editButton = document.querySelector('.edit-button');
 const saveButton = document.querySelector('.save-button');
@@ -29,6 +31,40 @@ userNameInput.className = "user-details-text-input";
 
 const userDescriptionInput = document.createElement('input');
 userDescriptionInput.className = "user-details-text-input";
+
+// const stompClient = new Client({
+//     brokerURL: 'ws://localhost:9090/ws',
+//     onConnect: () => {
+//         stompClient.subscribe('/topic/chats.f488.participants.join', (message) => {
+//             console.log('Получено сообщение:', message.body);
+//         });
+//     }
+// });
+//
+// stompClient.activate();
+
+const socket = new WebSocket('ws://localhost:9090/ws');
+// const stompClient = webstomp.client('ws://localhost:9090/ws');
+const stompClient = webstomp.over(socket);
+stompClient.debug = () => {};
+
+stompClient.connect({}, (frame) => {
+    console.log('Connected to WebSocket server');
+
+    // stompClient.subscribe('/topic/chats.f488.participants.join', (message) => {
+    //     console.log('Получено сообщение:', message.body);
+    // });
+}, (error) => {
+    console.error('Error connecting to WebSocket server:', error);
+});
+
+
+// stompClient.connect({}, (frame) => {
+//     stompClient.send({
+//         destination: '/topic/chats.f488.participants.join',
+//         body: 'Привет, это сообщение от клиента!',
+//     });
+// })
 
 function hideElement(element) {
     element.style.display = 'none';
