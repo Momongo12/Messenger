@@ -5,7 +5,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.example.chat.api.controllers.ws.ChatWsController;
 import org.example.chat.api.mappers.ChatMapper;
+import org.example.chat.api.mappers.MessageMapper;
 import org.example.chat.api.model.Chat;
+import org.example.chat.api.model.Message;
+import org.example.chat.api.model.dtos.MessageDto;
 import org.example.chat.api.services.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.SetOperations;
@@ -24,6 +27,8 @@ import java.util.stream.Stream;
 public class ChatServiceImpl implements ChatService {
 
     private final SetOperations<String, Chat> setOperations;
+    private final SetOperations<String, Message> setOperationsForMessages;
+    private final MessageMapper messageMapper;
     private final SimpMessagingTemplate messagingTemplate;
 
     @Autowired
@@ -50,10 +55,30 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    public void saveMessage(MessageDto messageDto, String chatId) {
+
+        Message message = messageMapper.messageDtoToMessage(messageDto);
+
+        setOperationsForMessages.add(ChatKeyHelper.makeKey(chatId), message);
+
+        log.debug("Message saved to %s chat".formatted(chatId));
+    }
+
+    @Override
     public Stream<Chat> getChats() {
         return Optional
                 .ofNullable(setOperations.members(KEY))
                 .orElseGet(HashSet::new)
                 .stream();
+    }
+
+    private static class ChatKeyHelper {
+
+        private static final String KEY = "messenger:chats:{chatId}:messages";
+
+        public static String makeKey(String chatId) {
+
+            return KEY.replace("{chatId}", chatId);
+        }
     }
 }

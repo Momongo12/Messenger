@@ -1,6 +1,5 @@
 package org.example.chat.api.model;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,13 +12,14 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Participant implements Serializable {
+public class Message implements Serializable {
+
+    private String senderName;
+
+    private Long senderId;
+
+    private String text;
+
     @Builder.Default
-    private Long enterAt = Instant.now().toEpochMilli();
-
-    private Long participantId;
-
-    private String avatarImageUrl;
-
-    private String chatId;
+    private Long createdAt = Instant.now().toEpochMilli();
 }

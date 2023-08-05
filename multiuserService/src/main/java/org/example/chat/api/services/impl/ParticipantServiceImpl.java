@@ -34,10 +34,10 @@ public class ParticipantServiceImpl implements ParticipantService {
 
     private static class ParticipantKeyHelper {
 
-        private static final String KEY = "messenger:chats:{chat_id}:participants";
+        private static final String KEY = "messenger:chats:{chatId}:participants";
 
         public static String makeKey(String chatId) {
-            return KEY.replace("{chat_id}", chatId);
+            return KEY.replace("{chatId}", chatId);
         }
     }
 }
