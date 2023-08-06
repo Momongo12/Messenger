@@ -61,7 +61,18 @@ public class ChatServiceImpl implements ChatService {
 
         setOperationsForMessages.add(ChatKeyHelper.makeKey(chatId), message);
 
-        log.debug("Message saved to %s chat".formatted(chatId));
+        log.info("Message saved to %s chat".formatted(chatId));
+    }
+
+    @Override
+    public Stream<Message> getMessages(String chatId) {
+
+        log.info("Fetching messages for chatId: {}", chatId);
+
+        return Optional.
+                ofNullable(setOperationsForMessages.members(ChatKeyHelper.makeKey(chatId)))
+                .orElseGet(HashSet::new)
+                .stream();
     }
 
     @Override
