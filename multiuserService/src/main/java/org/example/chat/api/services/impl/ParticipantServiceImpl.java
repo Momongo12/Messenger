@@ -9,6 +9,10 @@ import org.example.chat.api.services.ParticipantService;
 import org.springframework.data.redis.core.SetOperations;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.stream.Stream;
+
 
 @Log4j2
 @RequiredArgsConstructor
@@ -17,6 +21,15 @@ public class ParticipantServiceImpl implements ParticipantService {
 
     private final SetOperations<String, Participant> setOperations;
     private final ParticipantMapper participantMapper;
+
+    @Override
+    public Stream<Participant> getParticipants(String chatId) {
+
+        return Optional
+                .ofNullable(setOperations.members(ParticipantKeyHelper.makeKey(chatId)))
+                .orElseGet(HashSet::new)
+                .stream();
+    }
 
     @Override
     public void hundleJoinChat(ParticipantDto participantDto, String chatId) {

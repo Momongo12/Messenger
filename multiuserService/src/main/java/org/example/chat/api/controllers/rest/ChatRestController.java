@@ -18,8 +18,11 @@ public class ChatRestController {
     public static final String FETCH_CHATS = "/api/chats";
     public static final String CREATE_CHAT = "/api/chats/create";
 
+    public static final String DELETE_CHAT = "/api/chats/delete/{chatId}";
+
     @GetMapping(value = FETCH_CHATS)
     public List<ChatDto> fetchChats(){
+
         return chatService
                 .getChats()
                 .map(chatMapper::chatToChatDto)
@@ -28,6 +31,13 @@ public class ChatRestController {
 
     @PostMapping(value = CREATE_CHAT)
     public String createChat(@RequestBody String chatName) {
+
         return chatService.createChat(chatName);
+    }
+
+    @DeleteMapping(value = DELETE_CHAT)
+    public void deleteChat(@PathVariable String chatId) {
+
+        chatService.deleteChat(chatId);
     }
 }

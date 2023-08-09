@@ -10,7 +10,7 @@ import org.example.chat.api.model.Chat;
 import org.example.chat.api.model.Message;
 import org.example.chat.api.model.dtos.MessageDto;
 import org.example.chat.api.services.ChatService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -26,32 +26,49 @@ import java.util.stream.Stream;
 @Service
 public class ChatServiceImpl implements ChatService {
 
-    private final SetOperations<String, Chat> setOperations;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final SetOperations<String, Chat> chats;
     private final SetOperations<String, Message> setOperationsForMessages;
     private final MessageMapper messageMapper;
     private final SimpMessagingTemplate messagingTemplate;
 
-    @Autowired
-    private  ChatMapper chatMapper;
-    private static final String KEY = "messenger:chats";
+    private final ChatMapper chatMapper;
+
+    private static final String MESSENGER_CHATS_KEY = "messenger:chats";
 
     @Override
     public String createChat(String chatName) {
-
-        log.info("Chat \"%s\" created.".formatted(chatName));
 
         Chat chat = Chat.builder()
                 .name(chatName)
                 .build();
 
-        setOperations.add(KEY, chat);
+        chats.add(MESSENGER_CHATS_KEY, chat);
 
-        messagingTemplate.convertAndSend(
-                ChatWsController.FETCH_CREATE_CHAT_EVENT,
-                chatMapper.chatToChatDto(chat)
-        );
+        log.info("Chat \"%s\" created.".formatted(chatName));
 
         return chat.getId();
+    }
+
+    @Override
+    public void deleteChat(String chatId) {
+
+        //remove chat messages
+        redisTemplate.delete(ChatKeyHelper.makeKeyForChatMessagesSet(chatId));
+
+        //deleting chat member data
+        redisTemplate.delete(ChatKeyHelper.makeKeyForChatParticipantsSet(chatId));
+
+        //delete chat
+        getChats()
+                .filter(chat -> chat.getId().equals(chatId))
+                .findAny()
+                .ifPresent(chat -> {
+
+                    chats.remove(MESSENGER_CHATS_KEY, chat);
+
+                    log.info("Chat \"%s\" deleted.".formatted(chat.getName()));
+                });
     }
 
     @Override
@@ -59,7 +76,7 @@ public class ChatServiceImpl implements ChatService {
 
         Message message = messageMapper.messageDtoToMessage(messageDto);
 
-        setOperationsForMessages.add(ChatKeyHelper.makeKey(chatId), message);
+        setOperationsForMessages.add(ChatKeyHelper.makeKeyForChatMessagesSet(chatId), message);
 
         log.info("Message saved to %s chat".formatted(chatId));
     }
@@ -70,7 +87,7 @@ public class ChatServiceImpl implements ChatService {
         log.info("Fetching messages for chatId: {}", chatId);
 
         return Optional.
-                ofNullable(setOperationsForMessages.members(ChatKeyHelper.makeKey(chatId)))
+                ofNullable(setOperationsForMessages.members(ChatKeyHelper.makeKeyForChatMessagesSet(chatId)))
                 .orElseGet(HashSet::new)
                 .stream();
     }
@@ -78,18 +95,26 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public Stream<Chat> getChats() {
         return Optional
-                .ofNullable(setOperations.members(KEY))
+                .ofNullable(chats.members(MESSENGER_CHATS_KEY))
                 .orElseGet(HashSet::new)
                 .stream();
     }
 
     private static class ChatKeyHelper {
 
-        private static final String KEY = "messenger:chats:{chatId}:messages";
+        private static final String KEY_TO_MULTIPLE_CHAT_MESSAGES = "messenger:chats:{chatId}:messages";
 
-        public static String makeKey(String chatId) {
+        private static final String KEY_TO_MULTIPLE_CHAT_PARTICIPANTS = "messenger:chats{chatId}:participants";
 
-            return KEY.replace("{chatId}", chatId);
+        public static String makeKeyForChatMessagesSet(String chatId) {
+
+            return KEY_TO_MULTIPLE_CHAT_MESSAGES.replace("{chatId}", chatId);
         }
+
+        public static String makeKeyForChatParticipantsSet(String chatId) {
+
+            return KEY_TO_MULTIPLE_CHAT_PARTICIPANTS.replace("{chatId}", chatId);
+        }
+
     }
 }

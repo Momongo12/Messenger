@@ -12,6 +12,8 @@ public interface ChatService {
 
     String createChat(String chatName);
 
+    void deleteChat(String chatId);
+
     void saveMessage(MessageDto messageDto, String chatId);
 
     Stream<Message> getMessages(String chatId);

@@ -27,10 +27,8 @@ public class ChatWsController {
     private final ParticipantService participantService;
 
     private final SimpMessagingTemplate messagingTemplate;
-    private final MessageMapper messageMapper;
 
-    public static final String FETCH_CREATE_CHAT_EVENT = "/topic/chats.create.event";
-    public static final String FETCH_DELETE_CHAT_EVENT = "/topic/chats.delete.event";
+    private final MessageMapper messageMapper;
 
     public static final String HANDLE_SEND_MESSAGE_TO_ALL = "/chats.{chatId}.messages.send";
     public static final String SEND_MESSAGE_TO_ALL = "/topic/chats.{chatId}.messages.send";
