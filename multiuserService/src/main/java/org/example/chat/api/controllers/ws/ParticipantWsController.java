@@ -19,7 +19,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @Controller
 public class ParticipantWsController{
 
-    public static final String FETCH_PARTICIPANT_JOIN_IN_CHAT = "/chats.{chatId}.participants.join";
+    public static final String JOIN_IN_CHAT = "/chats.{chatId}.participants.join";
+    public static final String FETCH_PARTICIPANT_JOIN_IN_CHAT = "/topic/chats.{chatId}.participants.join";
     public static final String FETCH_PARTICIPANT_LEAVE_FROM_CHAT = "/topic/chats.{chatId}.participants.leave";
     private final ParticipantService participantService;
     private final SimpMessagingTemplate messagingTemplate;
@@ -35,7 +36,7 @@ public class ParticipantWsController{
 //    }
 
     @CrossOrigin
-    @MessageMapping(FETCH_PARTICIPANT_JOIN_IN_CHAT)
+    @MessageMapping(JOIN_IN_CHAT)
     @SendTo("/topic" + FETCH_PARTICIPANT_JOIN_IN_CHAT)
     public ParticipantDto notifyParticipantJoin(@DestinationVariable String chatId, @Payload ParticipantDto participantDto) {
 

@@ -30,9 +30,6 @@ public class ChatServiceImpl implements ChatService {
     private final SetOperations<String, Chat> chats;
     private final SetOperations<String, Message> setOperationsForMessages;
     private final MessageMapper messageMapper;
-    private final SimpMessagingTemplate messagingTemplate;
-
-    private final ChatMapper chatMapper;
 
     private static final String MESSENGER_CHATS_KEY = "messenger:chats";
 
